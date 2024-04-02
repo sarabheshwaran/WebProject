@@ -12,51 +12,55 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import uub.logicallayer.CustomerHelper;
-import uub.model.Customer;
+import uub.logicallayer.EmployeeHelper;
+import uub.model.Employee;
 import uub.staticlayer.CustomBankException;
 import uub.staticlayer.HelperUtils;
 
 /**
- * Servlet Filter implementation class SessionFilter
+ * Servlet Filter implementation class EmployeeFilter
  */
-@WebFilter("/app/user/*")
-public class UserFilter implements Filter {
+@WebFilter("/app/employee/*")
+public class EmployeeFilter implements Filter {
 
+    /**
+     * Default constructor. 
+     */
+    public EmployeeFilter() {
+        // TODO Auto-generated constructor stub
+    }
 
-	public UserFilter() {
-		// TODO Auto-generated constructor stub
-	}
-
-
+	/**
+	 * @see Filter#destroy()
+	 */
 	public void destroy() {
 		// TODO Auto-generated method stub
 	}
 
-
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
-
+	/**
+	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+	 */
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 
 		try {
 
-			CustomerHelper customerHelper = new CustomerHelper();
+			EmployeeHelper employeeHelper = new EmployeeHelper();
 
 			HttpSession session = httpRequest.getSession();
 
 			HelperUtils.nullCheck(session);
 
-			Object id = session.getAttribute("userId");
+			Object id = session.getAttribute("empId");
 			
 			HelperUtils.nullCheck(id);
 			
-			int userId = (int) id;
+			int empId = (int) id;
 
-			Customer customer = customerHelper.getCustomer(userId);
+			Employee employee = employeeHelper.getEmployee(empId);
 
-			request.setAttribute("profile", customer);
+			request.setAttribute("profile", employee);
 
 			chain.doFilter(request, response);
 			
@@ -66,10 +70,11 @@ public class UserFilter implements Filter {
 			httpResponse.sendRedirect(httpRequest.getContextPath()+"/app/login");
 			
 		}
-
 	}
 
-	
+	/**
+	 * @see Filter#init(FilterConfig)
+	 */
 	public void init(FilterConfig fConfig) throws ServletException {
 		// TODO Auto-generated method stub
 	}

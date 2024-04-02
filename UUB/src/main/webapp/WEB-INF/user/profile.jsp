@@ -5,16 +5,8 @@
 <%@ page import="uub.staticlayer.DateUtils"%>
 <html>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/styles/mainStyle.css">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-
-</head>
+<%@include file="/WEB-INF/includes/head.jsp"%>
 
 
 <body>
@@ -50,9 +42,11 @@
                         <i class="fa-regular fa-face-smile"></i>
                         <h3 style="color: #316952;">Password change Successful !!</h3>
                     </div>
+                      <form action="profile" method="get">
                     <div class="ok-button">
                         <input class="button" type="submit" value="OK">
                     </div>
+                    </form>
                 </div>
                 </div>
                 
@@ -75,9 +69,9 @@
                             </div>
                             <div class="space-div">
 
-                                <input type="password" id="old-password" name="old-password">
-                                <input type="text" id="new-password" name="new-password">
-                                <input type="text" id="repeat-password" name="repeat-password">
+                                <input type="password" id="oldPassword" name="oldPassword" required>
+                                <input type="text" id="newPassword" name="newPassword" required>
+                                <input type="text" id="repeatPassword" name="repeatPassword" required>
 
                             </div>
 

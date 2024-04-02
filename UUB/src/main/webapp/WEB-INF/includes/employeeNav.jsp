@@ -1,7 +1,7 @@
     <nav class="horizontal-nav">
         <div class="options">
             <div class="option ${page eq 'profile' ? 'selected' : ''}">
-                <a href="profile.html">
+                <a href="profile">
                     <div class="icon">
                         <i class="fa-solid fa-user"></i>
                     </div>Profile
@@ -25,6 +25,15 @@
                     <div class="icon">
                         <i class="fa-solid fa-user-pen"></i>
                     </div>Manage Customers
+                </a>
+            </div>
+            
+             <div class="option ${page eq 'branches' ? 'selected' : ''}">
+
+                <a href="branches">
+                    <div class="icon">
+                       <i class="fa-solid fa-code-branch"></i>
+                    </div>Manage Branches
                 </a>
             </div>
 

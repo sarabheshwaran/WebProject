@@ -2,12 +2,16 @@ package uub.debug;
 
 import java.util.ArrayList;
 
+import uub.cachelayer.Cache;
+import uub.cachelayer.RedisCache;
 import uub.enums.TransferType;
 import uub.logicallayer.CustomerHelper;
 import uub.logicallayer.EmployeeHelper;
+import uub.model.Account;
 import uub.model.Customer;
 import uub.model.Transaction;
 import uub.staticlayer.CustomBankException;
+import uub.staticlayer.HashEncoder;
 
 class Checker implements Runnable{
 
@@ -110,24 +114,9 @@ public class Debugger {
 
 //		TransactionHelper a = new TransactionHelper();
 
-		Checker3 c ;
-
-		ArrayList<Thread> threadPool = new ArrayList<>();
-
-		for(int i=0; i<20; i++ ) {
-
-			int x =1;
-			if(i%2==0) {
-				x = 12;
-			}
-			 threadPool.add(new Thread(new Checker3(x)));
-
-		}
-
-		for(Thread t: threadPool) {
-
-			t.start();
-		}
+		CustomerHelper s = new CustomerHelper();
+		
+		System.out.println(s.getAccount(2324));
 	}
 
 }

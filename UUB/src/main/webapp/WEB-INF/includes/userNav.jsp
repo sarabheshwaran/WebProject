@@ -18,7 +18,7 @@
 		</div>
 		<div class="option ${page eq 'transaction' ? 'selected' : ''}">
 
-			<a href="interbank.html">
+			<a href="transaction">
 				<div class="icon">
 					<i class="fa-solid fa-money-bill-transfer"></i>
 				</div>Transaction portal

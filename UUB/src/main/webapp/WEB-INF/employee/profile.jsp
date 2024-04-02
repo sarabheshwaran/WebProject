@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
+3<%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     
 <%@ page import="uub.model.Employee"%>
@@ -24,9 +24,6 @@
 <% pageContext.setAttribute("page", "profile"); %>
 
 <%@include file="/WEB-INF/includes/employeeNav.jsp"%>
-
-
-
 
 
 
@@ -133,7 +130,7 @@
                    
                     <div class="field">
                         <label>Branch ID:</label>
-                        <span>${profile.aadhar}</span>
+                        <span>${profile.branchId}</span>
                     </div>
                     <div class="field">
                         <label>Role:</label>

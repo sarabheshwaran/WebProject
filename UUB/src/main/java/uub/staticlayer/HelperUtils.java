@@ -35,6 +35,17 @@ public class HelperUtils {
 		try {
 			return Integer.parseInt(number);
 		} catch (Exception e) {
+			e.printStackTrace();
+			throw new CustomBankException(Exceptions.INVALID_INPUT);
+		}
+
+	}
+	
+	public static double formatDouble(String number) throws CustomBankException {
+
+		try {
+			return Double.parseDouble(number);
+		} catch (Exception e) {
 			throw new CustomBankException(Exceptions.INVALID_INPUT);
 		}
 

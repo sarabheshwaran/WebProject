@@ -70,6 +70,7 @@ public class CustomerHelper extends UserHelper {
 
 	}
 
+	
 	public Map<Integer, Account> getAccounts(int customerId) throws CustomBankException {
 
 		List<Integer> accNos = accountMapCache.get(customerId);
@@ -103,6 +104,7 @@ public class CustomerHelper extends UserHelper {
 		}
 
 	}
+
 
 	public Account getAccount(int accNo) throws CustomBankException {
 
@@ -199,6 +201,24 @@ public class CustomerHelper extends UserHelper {
 		long toMillis = DateUtils.formatDate(toDate);
 
 		return transactionHelper.getTransactions(accNo, fromMillis, toMillis, limit, (page - 1) * limit);
+	}
+	
+	public int getTransactionCount(int accNo, String from, String to, int limit, int page)
+			throws CustomBankException {
+
+		HelperUtils.nullCheck(from);
+		HelperUtils.nullCheck(to);
+
+		TransactionHelper transactionHelper = new TransactionHelper();
+		LocalDate fromDate = LocalDate.parse(from);
+		LocalDate toDate = LocalDate.parse(to);
+
+		toDate = toDate.plusDays(1);
+
+		long fromMillis = DateUtils.formatDate(fromDate);
+		long toMillis = DateUtils.formatDate(toDate);
+
+		return transactionHelper.getTransactionCount(accNo, fromMillis, toMillis);
 	}
 
 }

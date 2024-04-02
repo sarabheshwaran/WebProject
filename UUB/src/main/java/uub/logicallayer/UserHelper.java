@@ -22,8 +22,8 @@ public class UserHelper {
 
 	protected IUserDao userDao;
 	public static Cache<Integer,Customer> customerCache = new LRUCache<>(50);
-	public static Cache<Integer,List<Integer>>  accountMapCache = new RedisCache<>(6379);
-	public static Cache<Integer,Account> accountCache = new RedisCache<>(6379);
+	public static Cache<Integer,List<Integer>>  accountMapCache = new LRUCache<>(50);
+	public static Cache<Integer,Account> accountCache = new LRUCache<>(50);
 
 
 	public UserHelper() throws CustomBankException {
@@ -90,7 +90,31 @@ public class UserHelper {
 
 	}
 	
-	public void changePassword(String newPassword) {
+	public void updatePassword(int id, String password) throws CustomBankException {
+		
+		String encodedPassword = HashEncoder.encode(password);
+		
+		User user = new User();
+		
+		user.setId(id);
+		user.setPassword(encodedPassword);
+		
+		userDao.updateUser(user);
+		
+	}
+	
+	public void changePassword(int id, String oldPassword, String newPassword, String repeatPassword) throws CustomBankException {
+	
+		if(!newPassword.equals(repeatPassword)) {
+			
+			throw new CustomBankException(Exceptions.CONFIRM_PASSWORD);
+			
+		}
+		
+		passwordValidate(id, oldPassword);
+		
+		
+		updatePassword(id, newPassword);
 		
 	}
 

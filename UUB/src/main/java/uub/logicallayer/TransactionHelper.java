@@ -14,7 +14,6 @@ import uub.staticlayer.TransactionUtils;
 
 public class TransactionHelper {
 
-
 	private ITransactionDao transactionDao;
 
 	public TransactionHelper() throws CustomBankException {
@@ -142,6 +141,11 @@ public class TransactionHelper {
 	public List<Transaction> getTransactions(int accNo, long from, long to, int limit, int offSet)
 			throws CustomBankException {
 		return transactionDao.getTransactions(accNo, from, to, limit, offSet);
+	}
+
+	public int getTransactionCount(int accNo, long from, long to) throws CustomBankException {
+
+		return transactionDao.getTransactionCount(accNo, from, to);
 	}
 
 }

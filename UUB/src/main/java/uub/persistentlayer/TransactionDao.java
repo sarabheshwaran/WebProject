@@ -81,6 +81,29 @@ public class TransactionDao implements ITransactionDao {
 		return transactions;
 	}
 
+	@Override
+	public int getTransactionCount (int accNo, long from, long to) throws CustomBankException {
+
+		String query = "SELECT COUNT(*) AS COUNT FROM TRANSACTION WHERE ACC_NO =" + accNo + " AND TIME BETWEEN " + from + " AND "
+				+ to ;
+
+		
+		try (Connection connection = ConnectionManager.getConnection();
+				Statement statement = connection.createStatement();) {
+
+			ResultSet resultSet = statement.executeQuery(query);
+
+			if (resultSet.next()) {
+				return resultSet.getInt("COUNT");
+			}
+
+		} catch (SQLException e) {
+			throw new CustomBankException(e.getMessage());
+		}
+
+		return 0;
+	}
+
 
 	@Override
 	public void makeTransaction(List<Transaction> transactions) throws CustomBankException {

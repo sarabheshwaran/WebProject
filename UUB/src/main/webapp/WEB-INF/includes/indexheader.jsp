@@ -3,13 +3,11 @@
         <h1 class="title-logo">topian Union bank </h1>
     </header>
     
-        <nav>
+    <nav>
 
         <a href="<%=request.getContextPath()%>/">About</a>
-        
-        
 
         <a href="<%=request.getContextPath()%>/app/login">Login</a>
 
 
-    </nav>
+     </nav>

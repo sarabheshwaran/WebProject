@@ -27,7 +27,9 @@ public enum Exceptions {
 	PHONE_INVALID("Invalid phone no. !"),
 	PASSWORD_INVALID("Invalid password !"),
 	PAN_INVALID("Invalid PAN no. !"),
-	AADHAR_INVALID("Invalid aadhar no. !");
+	AADHAR_INVALID("Invalid aadhar no. !"),
+	
+	CONFIRM_PASSWORD("New password and repeat password doesnt match!");
 
 
     private final String errorMessage;

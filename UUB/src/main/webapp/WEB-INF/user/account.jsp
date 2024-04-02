@@ -74,7 +74,7 @@
                 </div>
             
             
-            <%} else{%>
+            <%} %>
             
                 <div class="body-header">
 
@@ -103,7 +103,7 @@
 	                            <td>
 	                                <div style="width: 100%;display: flex;justify-content: center;">
 	
-	                                    <form action="accounts?accNo" method="get">
+	                                    <form action="account?accNo" method="get">
 	                                     <input type="hidden" name="accNo" value="${account.key}">
 	                                        <input class="button" type="submit" value="See Account">
 	                                    </form>
@@ -125,8 +125,6 @@
                 </div>
 
 </div>
-
-<%} %>
             </div>
         </div>
 

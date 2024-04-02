@@ -132,8 +132,6 @@ public class EmployeeHelper extends CustomerHelper {
 
 		customerHelper.getCustomer(account.getUserId());
 
-		account.setBalance(0);
-
 		account.setStatus(AccountStatus.ACTIVE);
 
 		accountDao.addAccounts(List.of(account));
