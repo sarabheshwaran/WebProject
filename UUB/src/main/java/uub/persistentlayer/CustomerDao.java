@@ -134,7 +134,7 @@ public class CustomerDao implements ICustomerDao {
 
 		StringBuilder updateQuery = new StringBuilder("UPDATE CUSTOMER JOIN USER ON USER.ID = CUSTOMER.ID SET  ");
 
-		updateQuery.append(getFieldList(customer)).append("WHERE ID = ");
+		updateQuery.append(getFieldList(customer)).append("WHERE CUSTOMER.ID = ?");
 
 		try (Connection connection = ConnectionManager.getConnection();
 				PreparedStatement statement = connection.prepareStatement(updateQuery.toString())) {
@@ -152,10 +152,7 @@ public class CustomerDao implements ICustomerDao {
 	private String getFieldList(Customer customer) {
 
 		StringBuilder queryBuilder = new StringBuilder("  ");
-
-		if (customer.getId() != 0) {
-			queryBuilder.append("CUSTOMER.ID = ? , ");
-		}
+		
 		if (customer.getName() != null) {
 			queryBuilder.append("NAME = ? , ");
 		}
@@ -173,9 +170,6 @@ public class CustomerDao implements ICustomerDao {
 		}
 		if (customer.getPassword() != null) {
 			queryBuilder.append("PASSWORD = ?, ");
-		}
-		if (customer.getUserType() != null) {
-			queryBuilder.append("USER_TYPE = ? , ");
 		}
 		if (customer.getStatus() != null) {
 			queryBuilder.append("STATUS = ? , ");
@@ -216,9 +210,6 @@ public class CustomerDao implements ICustomerDao {
 		}
 		if (customer.getPassword() != null) {
 			statement.setObject(index++, customer.getPassword());
-		}
-		if (customer.getUserType() != null) {
-			statement.setObject(index++, customer.getUserType());
 		}
 		if (customer.getStatus() != null) {
 			statement.setObject(index++, customer.getStatus().getStatus());

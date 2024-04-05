@@ -1,5 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    <% response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+   response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+   response.setDateHeader("Expires", 0); // Proxies.
+%>
 <!DOCTYPE html>
 <html>
 
@@ -31,16 +35,16 @@
 
         <div class="form-container">
 
-            <form action="login" method="post">
+            <form class="login-form" action="login" method="post">
 
                 <div class="input">
                     <label for="userId">User ID:</label>
-                    <input type="text" id="userId" name="userId"><br><br>
+                    <input type="number" id="userId" name="userId" placeholder="Enter user ID" required><br><br>
                 </div>
 
                 <div class="input">
                     <label for="password">Password :</label>
-                    <input type="password" id="password" name="password"><br><br>
+                    <input type="password" id="password" name="password" placeholder="Enter Password" required><br><br>
                 </div>
                 
                     <input class ="button" type="submit" value="Submit">

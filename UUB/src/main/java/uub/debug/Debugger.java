@@ -114,9 +114,15 @@ public class Debugger {
 
 //		TransactionHelper a = new TransactionHelper();
 
-		CustomerHelper s = new CustomerHelper();
+		Customer a = new Customer();
+		Customer b = new Customer();
+//		
+		a.setEmail("dfg");
+		b.setEmail("dfg");
 		
-		System.out.println(s.getAccount(2324));
+		
+		
+		System.out.println(a.toString().equals(b.toString()));
 	}
 
 }

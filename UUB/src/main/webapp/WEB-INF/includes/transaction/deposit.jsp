@@ -17,11 +17,11 @@
                                     <div class="values">
 
                                         <label for="amount">Amount:</label>
-                                        <input type="number" id="amount" name="amount">
+                                        <input type="number" id="amount" placeholder="Enter Amount" name="amount" step="0.01" required>
                                     </div>
                                     <div class="values">
                                         <label for="password">Password:</label>
-                                        <input type="password" id="password" name="password">
+                                        <input type="password" id="password" placeholder="Enter Password" name="password" required>
                                     </div>
 
                                 </div>

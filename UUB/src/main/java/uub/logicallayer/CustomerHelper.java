@@ -12,9 +12,11 @@ import uub.enums.Exceptions;
 import uub.enums.TransactionStatus;
 import uub.enums.TransferType;
 import uub.model.Account;
+import uub.model.Branch;
 import uub.model.Customer;
 import uub.model.Transaction;
 import uub.persistentinterfaces.IAccountDao;
+import uub.persistentinterfaces.IBranchDao;
 import uub.persistentinterfaces.ICustomerDao;
 import uub.staticlayer.CustomBankException;
 import uub.staticlayer.DateUtils;
@@ -25,6 +27,7 @@ public class CustomerHelper extends UserHelper {
 
 	protected IAccountDao accountDao;
 	protected ICustomerDao customerDao;
+	protected IBranchDao branchDao;
 
 	public CustomerHelper() throws CustomBankException {
 
@@ -34,7 +37,10 @@ public class CustomerHelper extends UserHelper {
 
 			Class<?> CustomerDao = Class.forName("uub.persistentlayer.CustomerDao");
 			Constructor<?> cusDao = CustomerDao.getDeclaredConstructor();
+			Class<?> BranchDao = Class.forName("uub.persistentlayer.BranchDao");
+			Constructor<?> branDao = BranchDao.getDeclaredConstructor();
 
+			branchDao = (IBranchDao) branDao.newInstance();
 			accountDao = (IAccountDao) accDao.newInstance();
 			customerDao = (ICustomerDao) cusDao.newInstance();
 
@@ -99,7 +105,7 @@ public class CustomerHelper extends UserHelper {
 				return accounts;
 
 			} else {
-				throw new CustomBankException(Exceptions.ACCOUNT_NOT_FOUND);
+				return new HashMap<Integer, Account>();
 			}
 		}
 
@@ -129,6 +135,19 @@ public class CustomerHelper extends UserHelper {
 			}
 		}
 
+	}
+	
+	public Branch getBranch(int branchId) throws CustomBankException{
+		
+		List<Branch> branches = branchDao.getBranch(branchId);
+		
+		if(!branches.isEmpty()) {
+		
+			return branches.get(0);
+		}else {
+			throw new CustomBankException(Exceptions.BRANCH_NOT_FOUND);
+		}
+		
 	}
 
 	public void makeTransaction(Transaction transaction, String password) throws CustomBankException {

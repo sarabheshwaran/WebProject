@@ -1,10 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    
 <%@ page import="uub.model.Customer"%>
+    
+<%@ page import="uub.enums.EmployeeRole"%>
+<%@ page import="uub.model.User"%>
+<%@ page import="uub.model.Employee"%>
 <%@ page import="uub.staticlayer.DateUtils"%>
+<% response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+   response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+   response.setDateHeader("Expires", 0); // Proxies.
+%>
 <html>
-
 
 <%@include file="/WEB-INF/includes/head.jsp"%>
 
@@ -13,9 +19,22 @@
 
 <%@include file="/WEB-INF/includes/mainheader.jsp"%>
 
-<% pageContext.setAttribute("page", "profile"); %>
+<% pageContext.setAttribute("page", "profile"); 
+                   
+String type = (String)request.getAttribute("type"); %>
 
-<%@include file="/WEB-INF/includes/userNav.jsp"%>
+
+		<%if(type.equals("customer")){ %>
+		    
+				<%@include file="/WEB-INF/includes/userNav.jsp"%>
+		    
+		    <%}else{ %>
+		    
+		
+				<%@include file="/WEB-INF/includes/employeeNav.jsp"%>
+		
+		   <%} %>
+
 
 
     <div class="body">
@@ -24,17 +43,17 @@
         <div class="body-2">
          <%
          
-         if(request.getParameter("edit")!=null){ %>
+         if(request.getAttribute("edit")!=null){ %>
                 <div class="profile-div">
                 <div class="profile-header">
 
                     <h3>Change Password</h3>
                 </div>
-                
+                              
                 <%
                 
                 
-                if(request.getParameter("done")!=null){ %>
+                if(request.getAttribute("done")!=null){ %>
                 	
                 	
                 	  <div class="success-div">
@@ -61,23 +80,38 @@
 
                         <div class="input-div">
                             <div class="label-div">
-                            
+                             <div class="values">
                                 <label for="old-password">Old Password:</label>
+                                 <input type="password" id="oldPassword" name="oldPassword" required>
+                                 </div>
+                                 <div class="warning-block">
+                                     <ul>
+								        <li>Password should contain at least 8 characters</li>
+								        <li>Password should contain at least one uppercase letter</li>
+								        <li>Password should contain at least one lowercase letter</li>
+								        <li>Password should contain at least one number</li>
+								        <li>Password should contain at least one special character (e.g., !, @, #, $, %)</li>
+								        <li>Password should not contain spaces</li>
+								        <li>Password should not be a commonly used password</li>
+								    </ul>
+								    </div>
+                                  <div class="values">
                                 <label for="new-password">New Password:</label>
+                                 <input type="password" id="newPassword" name="newPassword" required>
+                                 </div>
+                                  <div class="values">
                                 <label for="repeat-password">Repeat Password:</label>
+                                 <input type="password" id="repeatPassword" name="repeatPassword" required>
+                                 </div>
+                                
 
                             </div>
-                            <div class="space-div">
-
-                                <input type="password" id="oldPassword" name="oldPassword" required>
-                                <input type="text" id="newPassword" name="newPassword" required>
-                                <input type="text" id="repeatPassword" name="repeatPassword" required>
-
-                            </div>
+              
 
                         </div>
                         <div class="submit-button">
                             <input class="button" type="submit" value="Submit">
+                         <a onclick="history.back()" class="red-button">Cancel</a>
                         </div>
                     </form>
                     
@@ -86,19 +120,16 @@
                 
                 
               
-                
              <%}}
          
          else{
+        	 
+        
          
-        	Customer customer = (Customer)request.getAttribute("profile");
+        	User user = (User)request.getAttribute("profile");
          
-        	String dateOfBirth = DateUtils.formatDate(customer.getDOB());
-        	String userType = customer.getUserType().toString();
-        	/* 
-        	String status = customer.getStatus().toString(); */
-        	
-        	String panNumber = customer.getPAN();
+        	String dateOfBirth = DateUtils.formatDate(user.getDOB());
+        	String userType = user.getUserType().toString();
         	
          %>
             
@@ -121,25 +152,46 @@
                         <label>Email:</label>
                         <span>${profile.email}</span>
                     </div>
+                    
                     <div class="field">
                         <label>Phone:</label>
                         <span>${profile.phone }</span>
                     </div>
+                    
                     <div class="field">
                         <label>Date of Birth:</label>
                         <span><%=dateOfBirth%></span>
                     </div>
+                    
                     <div class="field">
                         <label>Gender:</label>
                         <span>${profile.gender }</span>
                     </div>
-
+                   
+                   
+                   <%
+                   if(type.equals("employee")){ 
+                   
+                	   Employee employee = (Employee) user;
+                	   EmployeeRole role = employee.getRole();
+                   %>
                     <div class="field">
-                        <label>User Type:</label>
-                        <span><%= userType %></span>
+                        <label>Branch ID:</label>
+                        <span>${profile.branchId}</span>
                     </div>
-
                     <div class="field">
+                        <label>Role:</label>
+                        <span><%=role %></span>
+                    </div>
+                    
+                    <%}else{ 
+                    
+
+                        Customer customer = (Customer) user;
+                        String panNumber = customer.getPAN();
+                    %>
+                    
+                      <div class="field">
                         <label>Aadhar:</label>
                         <span>${profile.aadhar}</span>
                     </div>
@@ -151,6 +203,9 @@
                         <label>Address:</label>
                         <span>${profile.address}</span>
                     </div>
+                    
+                    <%} %>
+                    
                     <form action="profile" method="get">
                     <div class="submit-button">
                         <input class="button" type="submit" value="Change Password">

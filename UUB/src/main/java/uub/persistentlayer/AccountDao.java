@@ -170,7 +170,7 @@ public class AccountDao implements IAccountDao {
 
 	}
 
-	private Account mapAccount(ResultSet resultSet) throws SQLException {
+	private Account mapAccount(ResultSet resultSet) throws SQLException, CustomBankException {
 		Account account = new Account();
 
 		account.setAccNo(resultSet.getInt("ACC_NO"));
@@ -233,4 +233,33 @@ public class AccountDao implements IAccountDao {
 
 	}
 
+	@Override
+	public List<Account> getBranchAccount(int accNo, int branchId) throws CustomBankException {
+
+		String getQuery = "SELECT * FROM ACCOUNTS WHERE ACC_NO = ? AND BRANCH_ID = ?" ;
+
+		List<Account> accounts = new ArrayList<>();
+
+		try (Connection connection = ConnectionManager.getConnection();
+				PreparedStatement statement = connection.prepareStatement(getQuery)) {
+
+			statement.setInt(1, accNo);
+			statement.setInt(2, branchId);
+
+			ResultSet resultSet = statement.executeQuery();
+
+			Account account;
+			
+			while (resultSet.next()) {
+
+				account = mapAccount(resultSet);
+				accounts.add(account);
+
+			}
+
+			return accounts;
+		} catch (SQLException e) {
+			throw new CustomBankException(e.getMessage());
+		}
+	}
 }

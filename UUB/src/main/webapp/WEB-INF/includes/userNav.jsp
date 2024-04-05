@@ -10,7 +10,7 @@
 		</div>
 		<div class="option ${page eq 'accounts' ? 'selected' : ''}">
 
-			<a href="accounts">
+			<a href="account">
 				<div class="icon">
 					<i class="fa-solid fa-money-check-dollar"></i>
 				</div> Account Portal

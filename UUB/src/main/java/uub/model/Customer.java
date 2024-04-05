@@ -40,8 +40,8 @@ public class Customer extends User{
 	public String getPAN() {
 		return pan;
 	}
-	public void setPAN(String pAN) {
-		this.pan = pAN;
+	public void setPAN(String pan) {
+		this.pan = pan;
 	}
 	public String getAddress() {
 		return address;

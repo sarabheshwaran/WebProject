@@ -11,7 +11,7 @@
             
             <div class="option ${page eq 'accounts' ? 'selected' : ''}">
 
-                <a href="accounts">
+                <a href="manageAccounts?action=search">
                     <div class="icon">
                         <i class="fa-solid fa-list-check"></i>
                     </div>
@@ -21,21 +21,28 @@
             
             <div class="option ${page eq 'customers' ? 'selected' : ''}">
 
-                <a href="customers">
+                <a href="manageCustomers?action=search">
                     <div class="icon">
                         <i class="fa-solid fa-user-pen"></i>
                     </div>Manage Customers
                 </a>
             </div>
             
-             <div class="option ${page eq 'branches' ? 'selected' : ''}">
+				<%int access = (int) request.getAttribute("access");
+				
+				if(access==1){%>
 
-                <a href="branches">
-                    <div class="icon">
-                       <i class="fa-solid fa-code-branch"></i>
-                    </div>Manage Branches
-                </a>
-            </div>
+ 					<div class="option ${page eq 'employees' ? 'selected' : ''}">
+
+		                <a href="manageEmployees?action=search">
+		                    <div class="icon">
+		                       <i class="fa-solid fa-users"></i>
+		                    </div>Manage Employees
+		                </a>
+            		</div>
+				<%} %>
+            
+            
 
         </div>
 

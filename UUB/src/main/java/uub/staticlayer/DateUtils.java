@@ -13,7 +13,7 @@ public class DateUtils {
 
 		Instant instant = Instant.ofEpochMilli(millis);
 		ZonedDateTime time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MMM/dd ");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 		return time.format(formatter);
 	}
@@ -48,6 +48,18 @@ public class DateUtils {
 	}
 
 
+	public static boolean isAdult(long birthMillis) throws CustomBankException {
+		
+		int age = calculateAge(birthMillis);
+		
+		if(age < 18) {
+			throw new CustomBankException("Invalid age");
+		}
+		
+		return true;
+		
+	}
+	
     public static int calculateAge(long birthdateMillis) {
         LocalDate birthdate = Instant.ofEpochMilli(birthdateMillis)
                                       .atZone(ZoneId.systemDefault())

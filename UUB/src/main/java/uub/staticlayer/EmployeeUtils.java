@@ -57,7 +57,7 @@ public class EmployeeUtils {
 	}
 
 	public static boolean validateAadhar(String aadhaarNumber) throws CustomBankException {
-		String regex = "^\\d{4} \\d{4} \\d{4}$";
+		String regex = "^\\d{12}$";
 
 		boolean ans = Pattern.matches(regex, aadhaarNumber);
 

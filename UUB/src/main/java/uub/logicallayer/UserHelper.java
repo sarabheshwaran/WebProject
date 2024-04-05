@@ -6,7 +6,6 @@ import java.util.List;
 
 import uub.cachelayer.Cache;
 import uub.cachelayer.LRUCache;
-import uub.cachelayer.RedisCache;
 import uub.enums.Exceptions;
 import uub.enums.UserStatus;
 import uub.enums.UserType;
@@ -15,6 +14,7 @@ import uub.model.Customer;
 import uub.model.User;
 import uub.persistentinterfaces.IUserDao;
 import uub.staticlayer.CustomBankException;
+import uub.staticlayer.EmployeeUtils;
 import uub.staticlayer.HashEncoder;
 import uub.staticlayer.HelperUtils;
 
@@ -91,6 +91,8 @@ public class UserHelper {
 	}
 	
 	public void updatePassword(int id, String password) throws CustomBankException {
+		
+		EmployeeUtils.validatePass(password);
 		
 		String encodedPassword = HashEncoder.encode(password);
 		

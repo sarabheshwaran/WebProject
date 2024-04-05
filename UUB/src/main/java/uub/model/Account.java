@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import uub.enums.AccountStatus;
 import uub.enums.AccountType;
+import uub.enums.Exceptions;
+import uub.staticlayer.CustomBankException;
 import uub.staticlayer.HelperUtils;
 
 public class Account implements Serializable{
@@ -56,7 +58,11 @@ public class Account implements Serializable{
 	public double getBalance() {
 		return balance;
 	}
-	public void setBalance(double balance) {
+	public void setBalance(double balance) throws CustomBankException {
+		if(balance < 0) {
+			throw new CustomBankException(Exceptions.NEGATIVE_BALANCE);
+		}
+		
 		this.balance = HelperUtils.doubleFormat(balance);
 	}
 	public AccountStatus getStatus() {

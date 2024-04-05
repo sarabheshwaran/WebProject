@@ -10,6 +10,6 @@
             
             
             
-            <h3> ${profile.gender eq 'male' ? 'Mr.' : 'Ms.'} ${fn:toUpperCase(profile.name)}</h3>
+            <h3> ${myProfile.gender eq 'male' ? 'Mr.' : 'Ms.'} ${fn:toUpperCase(myProfile.name)}</h3>
         </div>
     </div>

@@ -160,7 +160,7 @@ public class EmployeeDao implements IEmployeeDao {
 	public void updateEmployee(Employee employee) throws CustomBankException {
 
 		StringBuilder updateQuery = new StringBuilder("UPDATE EMPLOYEE JOIN USER ON USER.ID = EMPLOYEE.ID SET  ");
-		updateQuery.append(getFieldList(employee)).append("WHERE ID = ?");
+		updateQuery.append(getFieldList(employee)).append("WHERE EMPLOYEE.ID = ?");
 
 		try (Connection connection = ConnectionManager.getConnection();
 				PreparedStatement statement = connection.prepareStatement(updateQuery.toString())) {
@@ -178,9 +178,7 @@ public class EmployeeDao implements IEmployeeDao {
 
 		StringBuilder queryBuilder = new StringBuilder("  ");
 
-		if (employee.getId() != 0) {
-			queryBuilder.append("EMPLOYEE.ID = ? , ");
-		}
+
 		if (employee.getName() != null) {
 			queryBuilder.append("NAME = ? , ");
 		}
@@ -198,9 +196,6 @@ public class EmployeeDao implements IEmployeeDao {
 		}
 		if (employee.getPassword() != null) {
 			queryBuilder.append("PASSWORD = ?, ");
-		}
-		if (employee.getUserType() != null) {
-			queryBuilder.append("USER_TYPE = ? , ");
 		}
 		if (employee.getStatus() != null) {
 			queryBuilder.append("STATUS = ? , ");
@@ -238,9 +233,6 @@ public class EmployeeDao implements IEmployeeDao {
 		}
 		if (employee.getPassword() != null) {
 			statement.setObject(index++, employee.getPassword());
-		}
-		if (employee.getUserType() != null) {
-			statement.setObject(index++, employee.getUserType());
 		}
 		if (employee.getStatus() != null) {
 			statement.setObject(index++, employee.getStatus().getStatus());

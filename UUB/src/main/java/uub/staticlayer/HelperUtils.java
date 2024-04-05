@@ -36,20 +36,25 @@ public class HelperUtils {
 			return Integer.parseInt(number);
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new CustomBankException(Exceptions.INVALID_INPUT);
+			throw new CustomBankException(Exceptions.INVALID_ID);
 		}
 
 	}
 	
 	public static double formatDouble(String number) throws CustomBankException {
 
+		if(number.length()>10) {
+			throw new CustomBankException(Exceptions.INVALID_AMNT);
+		}
+		
 		try {
 			return Double.parseDouble(number);
 		} catch (Exception e) {
-			throw new CustomBankException(Exceptions.INVALID_INPUT);
+			throw new CustomBankException(Exceptions.INVALID_AMNT);
 		}
 
 	}
+
 
 	public static double doubleFormat(double value) {
 

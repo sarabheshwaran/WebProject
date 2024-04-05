@@ -7,7 +7,10 @@
 <%@ page import="java.util.ArrayList"%>
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
     <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
+<% response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+   response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+   response.setDateHeader("Expires", 0); // Proxies.
+%>
 <!DOCTYPE html>
 <html>
 
@@ -18,9 +21,20 @@
 <body>
 
 <%@include file="/WEB-INF/includes/mainheader.jsp"%>
-<% pageContext.setAttribute("page", "accounts"); %>
-    
-<%@include file="/WEB-INF/includes/userNav.jsp"%>
+<% pageContext.setAttribute("page", "accounts");
+String type = (String)request.getAttribute("type"); %>
+
+
+		<%if(type.equals("customer")){ %>
+		    
+				<%@include file="/WEB-INF/includes/userNav.jsp"%>
+		    
+		    <%}else{ %>
+		    
+		
+				<%@include file="/WEB-INF/includes/employeeNav.jsp"%>
+		
+		   <%} %>
 
 <%@include file="/WEB-INF/includes/nameBar.jsp"%>
 
@@ -28,7 +42,16 @@
     <div class="body">
         <div class="body-1">
 
+<%if(type.equals("customer")){ %>
+		    
 	<%@include file="/WEB-INF/includes/userVerticalNav.jsp"%>
+		    
+		    <%}else{ %>
+		    
+		
+	<%@include file="/WEB-INF/includes/employeeVerticalNav.jsp"%>
+		
+		   <%} %>
         </div>
 
         <div class="body-2">
@@ -45,7 +68,7 @@
                 
                 <%
              
-                if(request.getParameter("accNo")==null){ %>
+                if(type.equals("customer") && request.getParameter("accNo")==null){ %>
 					<form class="radio" action="history" method="get">
 					
 					 	<label style="color:black" for="accNo">Select Account Number:</label>
@@ -69,13 +92,21 @@
                 
                     <div class="task-bar">
                         <form action="history" method="post">
+                        
+                        <%if(type.equals("employee")){ %>
+                         <label for="accNo">Acc No:</label>
+                            <input type="number" id="accNo" name="accNo" value="${param.accNo}" required>
+                            
+                        
+                        <%} %>
+                        
                             <label for="startDate">From:</label>
                             <input type="date" id="startDate" name="startDate" value="${param.startDate}" required>
                             <label for="endDate">To:</label>
                             <input type="date" id="endDate" name="endDate" value="${param.endDate}" required>
                             <input  type="hidden" name="pageNo" value="1">
-                            
-                            <input  type="hidden" name="accNo" value="<%=request.getParameter("accNo")%>">
+                             <%if(type.equals("customer")){ %>
+                            <input  type="hidden" name="accNo" value="<%=request.getParameter("accNo")%>"><%} %>
                             <button type="submit">Submit</button>
 
                         </form>
@@ -86,6 +117,13 @@
 				if(list!=null){
 				
 				List<Transaction> transactions = (ArrayList<Transaction>)list;
+				
+				if(transactions.isEmpty()){%>
+					
+					
+					<p class="no-history">No Transactions to show...</p>
+					
+				<%}else{
 					%>
                   <div class="history-tab">
                         <table class="history-table">
@@ -105,8 +143,8 @@
 	                            <td><%=transaction.getId() %></td>
 	                            <td><%=DateUtils.formatTime(transaction.getTime()) %></td>
 	                            <td><%=transaction.getType().toString() %></td>
-	                            <td><%=transaction.getTransactionAcc() %></td>
-	                            <td><%=transaction.getDesc() %></td>
+	                            <td><%=transaction.getTransactionAcc() == 0 ? "-" : transaction.getTransactionAcc() %></td>
+	                            <td><%=transaction.getDesc() == null ? "-" : transaction.getDesc()%></td>
 	                            
 	                            <%
 	                            double amount = transaction.getAmount();
@@ -169,7 +207,7 @@
                         </form>
                      
                          
-<%} %>
+<%}} %>
 
                  
                 </div>

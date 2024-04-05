@@ -12,6 +12,7 @@ import uub.model.Account;
 import uub.model.Branch;
 import uub.model.Customer;
 import uub.model.Employee;
+import uub.model.User;
 import uub.persistentinterfaces.IBranchDao;
 import uub.persistentinterfaces.IEmployeeDao;
 import uub.staticlayer.CustomBankException;
@@ -67,6 +68,24 @@ public class EmployeeHelper extends CustomerHelper {
 		return accountDao.getBranchAccounts(branchId, AccountStatus.INACTIVE, limit, offSet);
 	}
 
+	public Account getAccounts(int accNo, int branchId) throws CustomBankException {
+
+
+
+			List<Account> accounts = accountDao.getBranchAccount(accNo, branchId);
+
+			if (!accounts.isEmpty()) {
+
+				Account account = accounts.get(0);
+
+				return account;
+
+			} else {
+				throw new CustomBankException(Exceptions.ACCOUNT_NOT_IN_BRANCH);
+			}
+		
+	}
+
 	public Branch getBranch(int id) throws CustomBankException {
 		List<Branch> branches = branchDao.getBranch(id);
 
@@ -85,7 +104,7 @@ public class EmployeeHelper extends CustomerHelper {
 
 		synchronized (lock) {
 
-		accountCache.rem(accNo);
+			accountCache.rem(accNo);
 		}
 		account.setAccNo(accNo);
 		account.setStatus(AccountStatus.ACTIVE);
@@ -104,7 +123,7 @@ public class EmployeeHelper extends CustomerHelper {
 
 		synchronized (lock) {
 
-		accountCache.rem(accNo);
+			accountCache.rem(accNo);
 		}
 		account.setAccNo(accNo);
 		account.setStatus(AccountStatus.INACTIVE);
@@ -116,6 +135,37 @@ public class EmployeeHelper extends CustomerHelper {
 
 	}
 
+
+	public void activateUser(int userId) throws CustomBankException {
+
+		User user = new User();
+
+		user.setId(userId);
+		user.setStatus(UserStatus.ACTIVE);
+		int result = userDao.updateUser(user);
+		customerCache.rem(userId);
+		if (result == 0) {
+			throw new CustomBankException(Exceptions.USER_NOT_FOUND);
+		}
+
+	}
+
+	public void deActivateUser(int userId) throws CustomBankException {
+
+		User user = new User();
+
+		user.setId(userId);
+		user.setStatus(UserStatus.INACTIVE);
+		int result = userDao.updateUser(user);
+		customerCache.rem(userId);
+
+		if (result == 0) {
+			throw new CustomBankException(Exceptions.USER_NOT_FOUND);
+		}
+
+	}
+
+	
 	public void addAccount(Account account) throws CustomBankException {
 
 		HelperUtils.nullCheck(account);
@@ -124,9 +174,9 @@ public class EmployeeHelper extends CustomerHelper {
 
 		synchronized (lock) {
 
-		accountMapCache.rem(account.getUserId());
-		accountCache.rem(account.getAccNo());
-	}
+			accountMapCache.rem(account.getUserId());
+			accountCache.rem(account.getAccNo());
+		}
 
 		CustomerHelper customerHelper = new CustomerHelper();
 
@@ -145,12 +195,10 @@ public class EmployeeHelper extends CustomerHelper {
 		customer.setStatus(UserStatus.ACTIVE);
 
 		try {
-			if (EmployeeUtils.validatePhone(customer.getPhone())
-					&& EmployeeUtils.validateEmail(customer.getEmail())
+			if (EmployeeUtils.validatePhone(customer.getPhone()) && EmployeeUtils.validateEmail(customer.getEmail())
 					&& EmployeeUtils.validatePass(customer.getPassword())
 					&& EmployeeUtils.validateAadhar(customer.getAadhar())
 					&& EmployeeUtils.validatePAN(customer.getPAN())) {
-
 
 				String password = customer.getPassword();
 				customer.setPassword(HashEncoder.encode(password));
@@ -159,6 +207,70 @@ public class EmployeeHelper extends CustomerHelper {
 			}
 		} catch (Exception e) {
 			throw new CustomBankException(Exceptions.SIGNUP_FAILED + e.getMessage());
+
+		}
+
+	}
+
+	public void editCustomer(int id, Customer customer) throws CustomBankException {
+
+		HelperUtils.nullCheck(customer);
+
+		Customer compareObject = getCustomer(id);
+
+		
+		
+		try {
+			
+			
+			if (EmployeeUtils.validatePhone(customer.getPhone()) && EmployeeUtils.validateEmail(customer.getEmail())
+					&& EmployeeUtils.validateAadhar(customer.getAadhar())
+					&& EmployeeUtils.validatePAN(customer.getPAN())) {
+
+				int count = 0;
+				customer.setId(id);
+
+				if (customer.getName().equals(compareObject.getName())) {
+					customer.setName(null);
+					count ++;
+				}
+				if (customer.getEmail().equals(compareObject.getEmail())) {
+					customer.setEmail(null);
+					count ++;
+				}
+				if (customer.getPhone().equals(compareObject.getPhone())) {
+					customer.setPhone(null);
+					count ++;
+				}
+				if (customer.getDOB() == compareObject.getDOB()) {
+					customer.setDOB(0l);
+					count ++;
+				}
+				if (customer.getGender().equals(compareObject.getGender())) {
+					customer.setGender(null);
+					count ++;
+				}
+				if (customer.getAadhar().equals(compareObject.getAadhar())) {
+					customer.setAadhar(null);
+					count ++;
+				}
+				if (customer.getPAN().equals(compareObject.getPAN())) {
+					customer.setPAN(null);
+					count ++;
+				}
+				if (customer.getAddress().equals(compareObject.getAddress())) {
+					customer.setAddress(null);
+					count ++;
+				}
+
+				if(count<8) {
+				customerDao.updateCustomer(customer);
+
+
+				customerCache.rem(id);}
+			}
+		} catch (Exception e) {
+			throw new CustomBankException(Exceptions.UPDATE_FAILED + e.getMessage());
 
 		}
 

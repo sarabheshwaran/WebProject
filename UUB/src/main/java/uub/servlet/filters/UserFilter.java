@@ -53,16 +53,15 @@ public class UserFilter implements Filter {
 			HelperUtils.nullCheck(id);
 			
 			int userId = (int) id;
-
 			Customer customer = customerHelper.getCustomer(userId);
 
-			request.setAttribute("profile", customer);
+			request.setAttribute("myProfile", customer);
 
 			chain.doFilter(request, response);
 			
 
 		} catch (CustomBankException e) {
-			
+			e.printStackTrace();
 			httpResponse.sendRedirect(httpRequest.getContextPath()+"/app/login");
 			
 		}

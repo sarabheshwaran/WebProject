@@ -9,7 +9,6 @@ import uub.enums.Exceptions;
 import uub.enums.UserStatus;
 import uub.model.Branch;
 import uub.model.Employee;
-import uub.model.User;
 import uub.persistentinterfaces.IBranchDao;
 import uub.staticlayer.CustomBankException;
 import uub.staticlayer.EmployeeUtils;
@@ -38,44 +37,14 @@ public class AdminHelper extends EmployeeHelper {
 
 	}
 
-	public Map<Integer, Employee> getEmployees(int branchId, int limit, int offSet)
-			throws CustomBankException {
+	public Map<Integer, Employee> getEmployees(int branchId, int limit, int offSet) throws CustomBankException {
 
-		return employeeDao.getEmployeesWithBranch(branchId,UserStatus.ACTIVE, limit, offSet);
+		return employeeDao.getEmployeesWithBranch(branchId, UserStatus.ACTIVE, limit, offSet);
 	}
-
 
 	public Map<Integer, Branch> getAllBranches() throws CustomBankException {
 
 		return branchDao.getBranches();
-	}
-
-	public void activateUser(int userId) throws CustomBankException {
-
-		User user = new User();
-
-		user.setId(userId);
-		user.setStatus(UserStatus.ACTIVE);
-		int result = userDao.updateUser(user);
-
-		if (result == 0) {
-			throw new CustomBankException(Exceptions.USER_NOT_FOUND);
-		}
-
-	}
-
-	public void deActivateUser(int userId) throws CustomBankException {
-
-		User user = new User();
-
-		user.setId(userId);
-		user.setStatus(UserStatus.INACTIVE);
-		int result = userDao.updateUser(user);
-
-		if (result == 0) {
-			throw new CustomBankException(Exceptions.USER_NOT_FOUND);
-		}
-
 	}
 
 	public void addEmployee(Employee employee) throws CustomBankException {
@@ -95,6 +64,56 @@ public class AdminHelper extends EmployeeHelper {
 		} catch (Exception e) {
 			throw new CustomBankException(Exceptions.SIGNUP_FAILED + e.getMessage());
 
+		}
+
+	}
+
+	public void editEmployee(int id, Employee employee) throws CustomBankException {
+
+		HelperUtils.nullCheck(employee);
+
+		Employee compareObject = getEmployee(id);
+
+		int count = 0;
+		employee.setId(id);
+		try {
+			if (EmployeeUtils.validatePhone(employee.getPhone()) && EmployeeUtils.validateEmail(employee.getEmail())) {
+				if (employee.getName().equals(compareObject.getName())) {
+					employee.setName(null);
+					count++;
+				}
+				if (employee.getEmail().equals(compareObject.getEmail())) {
+					employee.setEmail(null);
+					count++;
+				}
+				if (employee.getPhone().equals(compareObject.getPhone())) {
+					employee.setPhone(null);
+					count++;
+				}
+				if (employee.getDOB() == compareObject.getDOB()) {
+					employee.setDOB(0l);
+					count++;
+				}
+				if (employee.getGender().equals(compareObject.getGender())) {
+					employee.setGender(null);
+					count++;
+				}
+				if (employee.getRole().equals(compareObject.getRole())) {
+					employee.setRole(null);
+					count++;
+				}
+				if (employee.getBranchId() == compareObject.getBranchId()) {
+					employee.setBranchId(0);
+					count++;
+				}
+
+				if(count<7) {
+				employeeDao.updateEmployee(employee);
+
+				customerCache.rem(id);}
+			}
+		} catch (CustomBankException e) {
+			throw new CustomBankException(Exceptions.UPDATE_FAILED + e.getMessage());
 		}
 
 	}
