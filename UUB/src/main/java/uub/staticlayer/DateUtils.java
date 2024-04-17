@@ -9,6 +9,10 @@ import java.time.format.DateTimeFormatter;
 public class DateUtils {
 
 
+	public static long getTime() {
+		return System.currentTimeMillis();
+	}
+	
 	public static String formatDate(long millis) {
 
 		Instant instant = Instant.ofEpochMilli(millis);

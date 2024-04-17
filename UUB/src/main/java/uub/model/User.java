@@ -19,6 +19,8 @@ public class User implements Serializable{
 	private String password;
 	private UserType userType;
 	private UserStatus status;
+	private long lastModifiedTime;
+	private int lastModifiedBy;
 
 
 
@@ -111,6 +113,18 @@ public class User implements Serializable{
 	}
 	public void setStatus(int status) {
 		this.status = UserStatus.valueOf(status);
+	}
+	public long getLastModifiedTime() {
+		return lastModifiedTime;
+	}
+	public void setLastModifiedTime(long lastModifiedTime) {
+		this.lastModifiedTime = lastModifiedTime;
+	}
+	public int getLastModifiedBy() {
+		return lastModifiedBy;
+	}
+	public void setLastModifiedBy(int lastModifiedBy) {
+		this.lastModifiedBy = lastModifiedBy;
 	}
 
 

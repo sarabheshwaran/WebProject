@@ -104,7 +104,6 @@ String type = (String)request.getAttribute("type"); %>
                             <input type="date" id="startDate" name="startDate" value="${param.startDate}" required>
                             <label for="endDate">To:</label>
                             <input type="date" id="endDate" name="endDate" value="${param.endDate}" required>
-                            <input  type="hidden" name="pageNo" value="1">
                              <%if(type.equals("customer")){ %>
                             <input  type="hidden" name="accNo" value="<%=request.getParameter("accNo")%>"><%} %>
                             <button type="submit">Submit</button>

@@ -16,7 +16,21 @@
     <artifactId>jedis</artifactId>
     <version>3.7.0</version> <!-- or the latest version available -->
 </dependency>
-
+<dependency>
+    <groupId>org.twitter4j</groupId>
+    <artifactId>twitter4j-core</artifactId>
+    <version>4.0.7</version>
+</dependency>
+<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <version>20140107</version>
+		</dependency>
+  	<dependency>
+  		<groupId>Bank-website</groupId>
+  		<artifactId>Bank-website</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
   </dependencies>
   <build>
     <plugins>

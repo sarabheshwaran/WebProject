@@ -94,6 +94,12 @@ public class UserDao implements IUserDao {
 		if (user.getStatus() != null) {
 			queryBuilder.append("STATUS = ? , ");
 		}
+		if(user.getLastModifiedTime() != 0) {
+			queryBuilder.append("LAST_MODIFIED_TIME = ? , ");
+		}
+		if(user.getLastModifiedBy() != 0) {
+			queryBuilder.append("LAST_MODIFIED_BY = ? , ");
+		}
 
 		queryBuilder.delete(queryBuilder.length() - 2, queryBuilder.length());
 		return queryBuilder.toString();
@@ -127,6 +133,12 @@ public class UserDao implements IUserDao {
 		}
 		if (user.getStatus() != null) {
 			statement.setObject(index++, user.getStatus().getStatus());
+		}
+		if (user.getLastModifiedTime() != 0) {
+			statement.setLong(index++, user.getLastModifiedTime());
+		}
+		if (user.getLastModifiedBy() != 0) {
+			statement.setInt(index++, user.getLastModifiedBy());
 		}
 		if (user.getId() != 0) {
 			statement.setObject(index++, user.getId());

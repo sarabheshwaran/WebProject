@@ -14,6 +14,7 @@ import uub.model.Customer;
 import uub.model.User;
 import uub.persistentinterfaces.IUserDao;
 import uub.staticlayer.CustomBankException;
+import uub.staticlayer.DateUtils;
 import uub.staticlayer.EmployeeUtils;
 import uub.staticlayer.HashEncoder;
 import uub.staticlayer.HelperUtils;
@@ -100,6 +101,8 @@ public class UserHelper {
 		
 		user.setId(id);
 		user.setPassword(encodedPassword);
+		user.setLastModifiedBy(id);
+		user.setLastModifiedTime(DateUtils.getTime());
 		
 		userDao.updateUser(user);
 		

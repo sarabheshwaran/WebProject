@@ -147,8 +147,8 @@ public class TransactionDao implements ITransactionDao {
 
 	private void addTransaction(Connection connection, List<Transaction> transactions) throws SQLException {
 
-		String addQuery = "INSERT INTO TRANSACTION (ID, USER_ID, ACC_NO, TRANSACTION_ACC, TYPE, AMOUNT, OPENING_BAL, CLOSING_BAL, DESCRIPTION, TIME, STATUS) "
-				+ "VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String addQuery = "INSERT INTO TRANSACTION (ID, USER_ID, ACC_NO, TRANSACTION_ACC, TYPE, AMOUNT, OPENING_BAL, CLOSING_BAL, DESCRIPTION, TIME, STATUS,LAST_MODIFIED_BY,LAST_MODIFIED_TIME) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try (PreparedStatement statement = connection.prepareStatement(addQuery)) {
 
 			for (Transaction transaction : transactions) {
@@ -164,6 +164,8 @@ public class TransactionDao implements ITransactionDao {
 				statement.setObject(9, transaction.getDesc());
 				statement.setObject(10, transaction.getTime());
 				statement.setObject(11, transaction.getStatus().getStatus());
+				statement.setObject(12, transaction.getLastModifiedBy());
+				statement.setObject(13, transaction.getLastModifiedTime());
 
 				statement.addBatch();
 			}
@@ -176,14 +178,16 @@ public class TransactionDao implements ITransactionDao {
 
 	private void updateAccount(Connection connection, List<Transaction> transactions) throws SQLException {
 
-		String updateQuery = "UPDATE ACCOUNTS SET BALANCE = ? WHERE ACC_NO = ?";
+		String updateQuery = "UPDATE ACCOUNTS SET BALANCE = ?, LAST_MODIFIED_TIME = ?,LAST_MODIFIED_BY = ? WHERE ACC_NO = ?";
 
 		try (PreparedStatement statement = connection.prepareStatement(updateQuery)) {
 
 			for (Transaction transaction : transactions) {
 
 				statement.setDouble(1, transaction.getClosingBal());
-				statement.setInt(2, transaction.getAccNo());
+				statement.setObject(2, transaction.getLastModifiedTime());
+				statement.setObject(3, transaction.getLastModifiedBy());
+				statement.setInt(4, transaction.getAccNo());
 				statement.addBatch();
 			}
 			statement.executeBatch();

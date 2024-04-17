@@ -11,6 +11,7 @@ import uub.model.Branch;
 import uub.model.Employee;
 import uub.persistentinterfaces.IBranchDao;
 import uub.staticlayer.CustomBankException;
+import uub.staticlayer.DateUtils;
 import uub.staticlayer.EmployeeUtils;
 import uub.staticlayer.HashEncoder;
 import uub.staticlayer.HelperUtils;
@@ -58,6 +59,7 @@ public class AdminHelper extends EmployeeHelper {
 
 				String password = employee.getPassword();
 				employee.setPassword(HashEncoder.encode(password));
+				employee.setLastModifiedTime(DateUtils.getTime());
 
 				employeeDao.addEmployee(List.of(employee));
 			}
@@ -107,10 +109,12 @@ public class AdminHelper extends EmployeeHelper {
 					count++;
 				}
 
-				if(count<7) {
-				employeeDao.updateEmployee(employee);
+				if (count < 7) {
 
-				customerCache.rem(id);}
+					employee.setLastModifiedTime(DateUtils.getTime());
+					employeeDao.updateEmployee(employee);
+					customerCache.rem(id);
+				}
 			}
 		} catch (CustomBankException e) {
 			throw new CustomBankException(Exceptions.UPDATE_FAILED + e.getMessage());

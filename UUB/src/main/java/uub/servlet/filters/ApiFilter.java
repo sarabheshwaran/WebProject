@@ -11,16 +11,18 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
+
 /**
- * Servlet Filter implementation class ValidationFilter
+ * Servlet Filter implementation class ApiFilter
  */
-@WebFilter("/app/*")
-public class ValidationFilter implements Filter {
+@WebFilter("/api/*")
+public class ApiFilter implements Filter {
 
     /**
      * Default constructor. 
      */
-    public ValidationFilter() {
+    public ApiFilter() {
         // TODO Auto-generated constructor stub
     }
 
@@ -39,22 +41,24 @@ public class ValidationFilter implements Filter {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		
-		String path = httpRequest.getPathInfo();
-
-		switch (path) {
-
-		case "/login": {
+		String apiKey = httpRequest.getHeader("Authentication");
+		
+		if(apiKey != null && apiKey.equals("hello")) {
 			
+			chain.doFilter(request, response);
 			
+		}
+		else {
 			
+			JSONObject result = new JSONObject();
 			
-			break;
+			result.put("result", "failed");
+			result.put("response-code", "401");
+			result.put("cause", "authentication failed");
+			
+			httpResponse.getWriter().print(result);
 		}
 		
-		
-		}
-		
-		chain.doFilter(request, response);
 	}
 
 	/**

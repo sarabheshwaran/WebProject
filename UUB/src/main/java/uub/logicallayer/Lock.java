@@ -1,10 +1,10 @@
 package uub.logicallayer;
 
-import java.util.Hashtable;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Lock {
-    private static Map<Integer, Object> hashtable = new Hashtable<>();
+    private static Map<Integer, Object> hashtable = new ConcurrentHashMap<Integer, Object>();
 
 
     public static Object get(int i) {

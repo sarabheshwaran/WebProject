@@ -127,7 +127,7 @@ public class AccountDao implements IAccountDao {
 
 		HelperUtils.nullCheck(accounts);
 
-		String addQuery = "INSERT INTO ACCOUNTS (USER_ID,BRANCH_ID,TYPE,BALANCE,STATUS) VALUES (?,?,?,?,?)";
+		String addQuery = "INSERT INTO ACCOUNTS (USER_ID,BRANCH_ID,TYPE,BALANCE,STATUS,LAST_MODIFIED_BY,LAST_MODIFIED_TIME) VALUES (?,?,?,?,?,?,?)";
 
 		try (Connection connection = ConnectionManager.getConnection();
 				PreparedStatement statement = connection.prepareStatement(addQuery)) {
@@ -137,6 +137,8 @@ public class AccountDao implements IAccountDao {
 				statement.setObject(3, account.getType().getType());
 				statement.setObject(4, account.getBalance());
 				statement.setObject(5, account.getStatus().getStatus());
+				statement.setObject(6, account.getLastModifiedBy());
+				statement.setObject(6, account.getLastModifiedTime());
 
 				statement.addBatch();
 			}
@@ -179,6 +181,8 @@ public class AccountDao implements IAccountDao {
 		account.setType(AccountType.valueOf(resultSet.getInt("TYPE")));
 		account.setBalance(resultSet.getDouble("BALANCE"));
 		account.setStatus(AccountStatus.valueOf(resultSet.getInt("STATUS")));
+		account.setLastModifiedBy(resultSet.getInt("LAST_MODIFIED_BY"));
+		account.setLastModifiedTime(resultSet.getLong("LAST_MODIFIED_TIME"));
 
 		return account;
 	}
@@ -201,6 +205,12 @@ public class AccountDao implements IAccountDao {
 		}
 		if (account.getStatus() != null) {
 			queryBuilder.append("STATUS = ? , ");
+		}
+		if(account.getLastModifiedTime() != 0) {
+			queryBuilder.append("LAST_MODIFIED_TIME = ? , ");
+		}
+		if(account.getLastModifiedBy() != 0) {
+			queryBuilder.append("LAST_MODIFIED_BY = ? , ");
 		}
 
 		queryBuilder.delete(queryBuilder.length() - 2, queryBuilder.length());
@@ -227,8 +237,14 @@ public class AccountDao implements IAccountDao {
 		if (account.getStatus() != null) {
 			statement.setObject(index++, account.getStatus().getStatus());
 		}
+		if (account.getLastModifiedTime() != 0) {
+			statement.setLong(index++, account.getLastModifiedTime());
+		}
+		if (account.getLastModifiedBy() != 0) {
+			statement.setInt(index++, account.getLastModifiedBy());
+		}
 		if (account.getAccNo() != 0) {
-			statement.setInt(index, account.getAccNo());
+			statement.setInt(index++, account.getAccNo());
 		}
 
 	}

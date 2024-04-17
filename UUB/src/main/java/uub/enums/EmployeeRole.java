@@ -3,6 +3,8 @@ package uub.enums;
 import java.util.HashMap;
 import java.util.Map;
 
+import uub.staticlayer.CustomBankException;
+
 public enum EmployeeRole {
 
 	STAFF(0),ADMIN(1);
@@ -25,8 +27,13 @@ public enum EmployeeRole {
 		}
 	}
 
-	public static EmployeeRole valueOf(int value) {
-		return valueMap.getOrDefault(value, null);
+	public static EmployeeRole valueOf(int value) throws CustomBankException {
+		EmployeeRole role =  valueMap.getOrDefault(value, null);
+		
+		if(role == null) {
+			throw new CustomBankException("Invalid Role!");
+		}
+		return role;
 	}
 }
 

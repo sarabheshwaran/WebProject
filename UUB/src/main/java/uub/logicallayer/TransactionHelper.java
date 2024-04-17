@@ -10,6 +10,7 @@ import uub.model.Account;
 import uub.model.Transaction;
 import uub.persistentinterfaces.ITransactionDao;
 import uub.staticlayer.CustomBankException;
+import uub.staticlayer.DateUtils;
 import uub.staticlayer.TransactionUtils;
 
 public class TransactionHelper {
@@ -46,7 +47,7 @@ public class TransactionHelper {
 		synchronized (lock) {
 
 			setTransaction(transaction);
-
+			transaction.setLastModifiedTime(DateUtils.getTime());
 			transactionDao.makeTransaction(List.of(transaction));
 
 		}
@@ -61,6 +62,7 @@ public class TransactionHelper {
 
 		synchronized (lock) {
 			setTransaction(transaction);
+			transaction.setLastModifiedTime(DateUtils.getTime());
 
 			transactionDao.makeTransaction(List.of(transaction));
 		}
@@ -79,6 +81,8 @@ public class TransactionHelper {
 			setTransaction(transaction);
 			setTransaction(rTransaction);
 
+			transaction.setLastModifiedTime(DateUtils.getTime());
+			rTransaction.setLastModifiedTime(DateUtils.getTime());
 			transactionDao.makeTransaction(List.of(transaction, rTransaction));
 		}
 	}
@@ -121,6 +125,7 @@ public class TransactionHelper {
 		rTransaction.setDesc(transaction.getDesc());
 		rTransaction.setType(transaction.getType());
 		rTransaction.setStatus(transaction.getStatus());
+		rTransaction.setLastModifiedBy(transaction.getLastModifiedBy());
 
 		int accNo = transaction.getTransactionAcc();
 

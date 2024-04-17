@@ -6,16 +6,26 @@ body {
 	padding: 0;
 	background-color: #f3f7fa;
 	overflow: hidden;
-	transform: scale(0.9);
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
+input[type="number"] {
+    -moz-appearance: textfield; /* Firefox */
+}
 .values {
 	display: flex;
 	width: 100%;
 	margin-top: 15px;
 	padding: 5px;;
 }
+.body{
+		transform: scale(0.9);
 
+}
 .values label, input, select, textarea {
 	width: 100%;
 	margin: 0;

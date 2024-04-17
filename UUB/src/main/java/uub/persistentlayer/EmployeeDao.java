@@ -88,7 +88,7 @@ public class EmployeeDao implements IEmployeeDao {
 
 			connection.setAutoCommit(false);
 
-			String addQuery1 = "INSERT INTO USER (NAME,EMAIL,PHONE,DOB,GENDER,PASSWORD,USER_TYPE,STATUS) VALUES (?,?,?,?,?,?,?,?)";
+			String addQuery1 = "INSERT INTO USER (NAME,EMAIL,PHONE,DOB,GENDER,PASSWORD,USER_TYPE,STATUS,LAST_MODIFIED_BY,LAST_MODIFIED_TIME) VALUES (?,?,?,?,?,?,?,?,?,?)";
 			String addQuery2 = "INSERT INTO EMPLOYEE VALUES (?,?,?)";
 
 			try (PreparedStatement statement = connection.prepareStatement(addQuery1,
@@ -102,8 +102,11 @@ public class EmployeeDao implements IEmployeeDao {
 					statement.setObject(4, employee.getDOB());
 					statement.setObject(5, employee.getGender());
 					statement.setObject(6, employee.getPassword());
-					statement.setObject(7, employee.getUserType());
-					statement.setObject(8, employee.getStatus());
+					statement.setObject(7, employee.getUserType().getType());
+					statement.setObject(8, employee.getStatus().getStatus());
+					statement.setObject( 9, employee.getLastModifiedBy());
+					statement.setObject( 10, employee.getLastModifiedTime());
+					
 					statement.addBatch();
 				}
 				statement.executeBatch();
@@ -115,9 +118,8 @@ public class EmployeeDao implements IEmployeeDao {
 						int id = resultSet.getInt(1);
 						Employee employee = employees.get(index);
 						statement2.setObject(1, id);
-						statement2.setObject(2, employee.getRole());
-						statement2.setObject(3, employee.getBranchId());
-
+						statement2.setObject(2, employee.getBranchId());
+						statement2.setObject(3, employee.getRole().getRole());
 						statement2.addBatch();
 						index++;
 					}
@@ -206,6 +208,12 @@ public class EmployeeDao implements IEmployeeDao {
 		if (employee.getBranchId() != 0) {
 			queryBuilder.append("BRANCH_ID = ? , ");
 		}
+		if(employee.getLastModifiedTime() != 0) {
+			queryBuilder.append("LAST_MODIFIED_TIME = ? , ");
+		}
+		if(employee.getLastModifiedBy() != 0) {
+			queryBuilder.append("LAST_MODIFIED_BY = ? , ");
+		}
 
 		queryBuilder.delete(queryBuilder.length() - 2, queryBuilder.length());
 		return queryBuilder.toString();
@@ -243,13 +251,19 @@ public class EmployeeDao implements IEmployeeDao {
 		if (employee.getBranchId() != 0) {
 			statement.setObject(index++, employee.getBranchId());
 		}
+		if (employee.getLastModifiedTime() != 0) {
+			statement.setLong(index++, employee.getLastModifiedTime());
+		}
+		if (employee.getLastModifiedBy() != 0) {
+			statement.setInt(index++, employee.getLastModifiedBy());
+		}
 		if (employee.getId() != 0) {
 			statement.setObject(index++, employee.getId());
 		}
 
 	}
 
-	private Employee mapEmployee(ResultSet resultSet) throws SQLException {
+	private Employee mapEmployee(ResultSet resultSet) throws SQLException, CustomBankException {
 
 		Employee employee = new Employee();
 

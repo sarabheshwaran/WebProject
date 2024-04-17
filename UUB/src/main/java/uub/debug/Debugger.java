@@ -2,6 +2,8 @@ package uub.debug;
 
 import java.util.ArrayList;
 
+import org.json.JSONObject;
+
 import uub.cachelayer.Cache;
 import uub.cachelayer.RedisCache;
 import uub.enums.TransferType;
@@ -11,6 +13,7 @@ import uub.model.Account;
 import uub.model.Customer;
 import uub.model.Transaction;
 import uub.staticlayer.CustomBankException;
+import uub.staticlayer.DateUtils;
 import uub.staticlayer.HashEncoder;
 
 class Checker implements Runnable{
@@ -117,12 +120,13 @@ public class Debugger {
 		Customer a = new Customer();
 		Customer b = new Customer();
 //		
-		a.setEmail("dfg");
-		b.setEmail("dfg");
+CustomerHelper c = new CustomerHelper();
+
+System.out.println(new JSONObject(c.getCustomer(85)));
 		
 		
+
 		
-		System.out.println(a.toString().equals(b.toString()));
 	}
 
 }

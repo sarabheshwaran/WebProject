@@ -17,6 +17,8 @@ public class Account implements Serializable{
 	private AccountType type;
 	private double balance = -1;
 	private AccountStatus status;
+	private long lastModifiedTime;
+	private int lastModifiedBy;
 
 
 
@@ -75,7 +77,24 @@ public class Account implements Serializable{
 	public void setStatus(int status) {
 		this.status =AccountStatus.valueOf(status);
 	}
+	public long getLastModifiedTime() {
+		return lastModifiedTime;
+	}
 
+
+	public void setLastModifiedTime(long lastModifiedTime) {
+		this.lastModifiedTime = lastModifiedTime;
+	}
+
+
+	public int getLastModifiedBy() {
+		return lastModifiedBy;
+	}
+
+
+	public void setLastModifiedBy(int lastModifiedBy) {
+		this.lastModifiedBy = lastModifiedBy;
+	}
 
 
 }

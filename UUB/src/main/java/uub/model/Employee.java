@@ -3,6 +3,7 @@ package uub.model;
 import uub.enums.EmployeeRole;
 import uub.enums.UserStatus;
 import uub.enums.UserType;
+import uub.staticlayer.CustomBankException;
 
 public class Employee extends User{
 
@@ -36,7 +37,7 @@ public class Employee extends User{
 	public EmployeeRole getRole() {
 		return role;
 	}
-	public void setRole(int role) {
+	public void setRole(int role) throws CustomBankException {
 		this.role = EmployeeRole.valueOf(role);
 	}
 	public void setRole(EmployeeRole role) {

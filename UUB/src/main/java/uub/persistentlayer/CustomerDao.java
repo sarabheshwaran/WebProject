@@ -26,7 +26,7 @@ public class CustomerDao implements ICustomerDao {
 			connection = ConnectionManager.getConnection();
 		connection.setAutoCommit(false);
 
-		String addQuery1 = "INSERT INTO USER (NAME,EMAIL,PHONE,DOB,GENDER,PASSWORD,USER_TYPE,STATUS) VALUES (?,?,?,?,?,?,?,?)";
+		String addQuery1 = "INSERT INTO USER (NAME,EMAIL,PHONE,DOB,GENDER,PASSWORD,USER_TYPE,STATUS,LAST_MODIFIED_BY,LAST_MODIFIED_TIME) VALUES (?,?,?,?,?,?,?,?,?,?)";
 		String addQuery2 = "INSERT INTO CUSTOMER VALUES (?,?,?,?)";
 
 		try (
@@ -44,6 +44,8 @@ public class CustomerDao implements ICustomerDao {
 				statement.setObject( 6, customer.getPassword());
 				statement.setObject( 7, customer.getUserType().getType());
 				statement.setObject( 8, customer.getStatus().getStatus());
+				statement.setObject( 9, customer.getLastModifiedBy());
+				statement.setObject( 10, customer.getLastModifiedTime());
 				statement.addBatch();
 			}
 			statement.executeBatch();
@@ -183,6 +185,12 @@ public class CustomerDao implements ICustomerDao {
 		if (customer.getAddress() != null) {
 			queryBuilder.append("ADDRESS = ? , ");
 		}
+		if(customer.getLastModifiedTime() != 0) {
+			queryBuilder.append("LAST_MODIFIED_TIME = ? , ");
+		}
+		if(customer.getLastModifiedBy() != 0) {
+			queryBuilder.append("LAST_MODIFIED_BY = ? , ");
+		}
 
 		queryBuilder.delete(queryBuilder.length() - 2, queryBuilder.length());
 		return queryBuilder.toString();
@@ -222,6 +230,12 @@ public class CustomerDao implements ICustomerDao {
 		}
 		if (customer.getAddress() != null) {
 			statement.setObject(index++, customer.getAddress());
+		}
+		if (customer.getLastModifiedTime() != 0) {
+			statement.setLong(index++, customer.getLastModifiedTime());
+		}
+		if (customer.getLastModifiedBy() != 0) {
+			statement.setInt(index++, customer.getLastModifiedBy());
 		}
 
 		if (customer.getId() != 0) {

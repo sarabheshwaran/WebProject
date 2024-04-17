@@ -207,6 +207,10 @@ public class CustomerHelper extends UserHelper {
 	public List<Transaction> getTransaction(int accNo, String from, String to, int limit, int page)
 			throws CustomBankException {
 
+		if(page == 0) {
+			page = 1;
+		}
+		
 		HelperUtils.nullCheck(from);
 		HelperUtils.nullCheck(to);
 

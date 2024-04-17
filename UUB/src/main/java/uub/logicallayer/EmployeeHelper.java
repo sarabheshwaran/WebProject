@@ -16,6 +16,7 @@ import uub.model.User;
 import uub.persistentinterfaces.IBranchDao;
 import uub.persistentinterfaces.IEmployeeDao;
 import uub.staticlayer.CustomBankException;
+import uub.staticlayer.DateUtils;
 import uub.staticlayer.EmployeeUtils;
 import uub.staticlayer.HashEncoder;
 import uub.staticlayer.HelperUtils;
@@ -108,6 +109,7 @@ public class EmployeeHelper extends CustomerHelper {
 		}
 		account.setAccNo(accNo);
 		account.setStatus(AccountStatus.ACTIVE);
+		account.setLastModifiedTime(DateUtils.getTime());
 		int result = accountDao.updateAccount(account);
 
 		if (result == 0) {
@@ -127,6 +129,7 @@ public class EmployeeHelper extends CustomerHelper {
 		}
 		account.setAccNo(accNo);
 		account.setStatus(AccountStatus.INACTIVE);
+		account.setLastModifiedTime(DateUtils.getTime());
 		int result = accountDao.updateAccount(account);
 
 		if (result == 0) {
@@ -136,12 +139,14 @@ public class EmployeeHelper extends CustomerHelper {
 	}
 
 
-	public void activateUser(int userId) throws CustomBankException {
+	public void activateUser(int userId, int modifier) throws CustomBankException {
 
 		User user = new User();
 
 		user.setId(userId);
 		user.setStatus(UserStatus.ACTIVE);
+		user.setLastModifiedBy(modifier);
+		user.setLastModifiedTime(DateUtils.getTime());
 		int result = userDao.updateUser(user);
 		customerCache.rem(userId);
 		if (result == 0) {
@@ -150,12 +155,14 @@ public class EmployeeHelper extends CustomerHelper {
 
 	}
 
-	public void deActivateUser(int userId) throws CustomBankException {
+	public void deActivateUser(int userId, int modifier) throws CustomBankException {
 
 		User user = new User();
 
 		user.setId(userId);
 		user.setStatus(UserStatus.INACTIVE);
+		user.setLastModifiedBy(modifier);
+		user.setLastModifiedTime(DateUtils.getTime());
 		int result = userDao.updateUser(user);
 		customerCache.rem(userId);
 
@@ -183,6 +190,7 @@ public class EmployeeHelper extends CustomerHelper {
 		customerHelper.getCustomer(account.getUserId());
 
 		account.setStatus(AccountStatus.ACTIVE);
+		account.setLastModifiedTime(DateUtils.getTime());
 
 		accountDao.addAccounts(List.of(account));
 
@@ -202,6 +210,7 @@ public class EmployeeHelper extends CustomerHelper {
 
 				String password = customer.getPassword();
 				customer.setPassword(HashEncoder.encode(password));
+				customer.setLastModifiedTime(DateUtils.getTime());
 
 				customerDao.addCustomer(List.of(customer));
 			}
@@ -265,6 +274,7 @@ public class EmployeeHelper extends CustomerHelper {
 
 				if(count<8) {
 				customerDao.updateCustomer(customer);
+				customer.setLastModifiedTime(DateUtils.getTime());
 
 
 				customerCache.rem(id);}

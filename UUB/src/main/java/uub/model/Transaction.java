@@ -17,6 +17,8 @@ public class Transaction {
 	private String desc;
 	private long time;
 	private TransactionStatus status;
+	private long lastModifiedTime;
+	private int lastModifiedBy;
 
 
 	public Transaction() {
@@ -103,6 +105,18 @@ public class Transaction {
 	}
 	public void setStatus(int status) {
 		this.status = TransactionStatus.valueOf(status) ;
+	}
+	public long getLastModifiedTime() {
+		return lastModifiedTime;
+	}
+	public void setLastModifiedTime(long lastModifiedTime) {
+		this.lastModifiedTime = lastModifiedTime;
+	}
+	public int getLastModifiedBy() {
+		return lastModifiedBy;
+	}
+	public void setLastModifiedBy(int lastModifiedBy) {
+		this.lastModifiedBy = lastModifiedBy;
 	}
 
 

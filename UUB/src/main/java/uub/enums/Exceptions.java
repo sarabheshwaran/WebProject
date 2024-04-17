@@ -15,7 +15,7 @@ public enum Exceptions {
     BRANCH_NOT_FOUND("Branch not found"),
     SIGNUP_FAILED("Signup failed !"),
     UPDATE_FAILED("Update failed !"),
-
+    INVALID_API_KEY("Invalid Api Key"),
     
     DATABASE_CONNECTION_ERROR("Error connecting to the database."),
 
