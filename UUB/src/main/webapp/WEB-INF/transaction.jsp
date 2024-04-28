@@ -36,9 +36,52 @@
                 <h3>Transaction Portal</h3>
             </div>
             <div class="body-main">
+            
+            <%					String type = (String)request.getAttribute("type"); %>
                 <div class="body-header">
+				<% switch(type){
+					case "interbank":{
+						
+						%>
+						
+						                    <h3>Inter Bank Transfer</h3>
+						
+						<%
+						
+						break;
+					}					
+					case "intrabank":{
+						
+						%>
+						
+						                    <h3>Intra Bank Transfer</h3>
+						
+						<%
+						
+						break;
+					}					
+					case "deposit":{
+						
+						%>
+						
+						                    <h3>Deposit</h3>
+						
+						<%
+						
+						break;
+					}								
+					case "withdraw":{
+						
+						%>
+						
+						                    <h3>Withdraw</h3>
+						
+						<%
+						
+						break;
+					
+					}}%>
 
-                    <h3>Inter Bank Transfer</h3>
                 </div>
                 <div class="main-content">
                 
@@ -67,7 +110,7 @@
 						<p class="no-history">You Can't do transaction ! <br> Create an UUB account from the nearby branch !</p>
 					<%}else{
 	                	
-					String type = (String)request.getAttribute("type");
+
 					
 					switch(type){
 					case "interbank":{

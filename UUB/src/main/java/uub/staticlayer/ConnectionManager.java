@@ -21,6 +21,7 @@ public class ConnectionManager {
 
 		return connection;}
 		catch ( ClassNotFoundException| SQLException e) {
+			e.printStackTrace();
 			throw new CustomBankException("Connection not created");
 
 		}

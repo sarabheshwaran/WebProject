@@ -66,7 +66,7 @@ String type = (String)request.getAttribute("type"); %>
                 </div>
                 <div class="main-content">
                 
-                <%
+<%--                 <%
              
                 if(type.equals("customer") && request.getParameter("accNo")==null){ %>
 					<form class="radio" action="history" method="get">
@@ -87,7 +87,7 @@ String type = (String)request.getAttribute("type"); %>
 					
 					
 
-<%}else{ %>
+<% %> --%>
                 
                 
                     <div class="task-bar">
@@ -99,19 +99,35 @@ String type = (String)request.getAttribute("type"); %>
                             
                         
                         <%} %>
+                             <%if(type.equals("customer")){ %>
+                            <%List<Integer> accNos = (List<Integer>)request.getAttribute("accNos");
+                            
+                            int accNo = 0;
+                            if(request.getParameter("accNo")!=null){
+                            
+                            	accNo = Integer.parseInt(request.getParameter("accNo"));
+                            }
+
+                            %>
+                         <label for="accNo">Acc No:</label>
+		                    <select id="accNo" name="accNo" required>
+                            <%for(int a : accNos)
+                            {%>
+                            <option value="<%= a %>" <%=a==accNo ? "selected" : "" %>><%=a%></option>
+							<%} %>
+							</select>
+                            <%} %>
                         
                             <label for="startDate">From:</label>
                             <input type="date" id="startDate" name="startDate" value="${param.startDate}" required>
                             <label for="endDate">To:</label>
                             <input type="date" id="endDate" name="endDate" value="${param.endDate}" required>
-                             <%if(type.equals("customer")){ %>
-                            <input  type="hidden" name="accNo" value="<%=request.getParameter("accNo")%>"><%} %>
                             <button type="submit">Submit</button>
 
                         </form>
                     </div>
                    
-			<% }
+			<% 
 				Object list = request.getAttribute("transactions");
 				if(list!=null){
 				
@@ -215,7 +231,12 @@ String type = (String)request.getAttribute("type"); %>
 
     </div>
 
-
+  <script>
+    let today = new Date().toISOString().split('T')[0];
+    
+    document.getElementById("startDate").value = today;
+    document.getElementById("endDate").value = today;
+  </script>
 
 </body>
 

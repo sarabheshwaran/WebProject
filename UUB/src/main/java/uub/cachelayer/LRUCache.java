@@ -22,7 +22,7 @@ public class LRUCache<K, V> extends LinkedHashMap<K, V> implements Cache<K, V>{
     }
 
 	@Override
-	public void set(K key, V value) throws CustomBankException {
+	public void set(K key, V value) {
 		this.put(key, value);
 
 	}
@@ -40,3 +40,8 @@ public class LRUCache<K, V> extends LinkedHashMap<K, V> implements Cache<K, V>{
 	}
 
 }
+
+
+
+
+

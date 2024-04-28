@@ -2,7 +2,7 @@ package uub.staticlayer;
 
 import java.util.regex.Pattern;
 
-public class EmployeeUtils {
+public class ValidationUtils {
 	public static boolean validateEmail(String email) throws CustomBankException {
 
 		HelperUtils.nullCheck(email);
@@ -68,6 +68,13 @@ public class EmployeeUtils {
 		}
 	}
 
+	public static String sanitate(String input)  {
+		return input.replace("&", "&amp;")
+					.replace("<", "&lt;")
+					.replace(">", "&gt;")
+					.replace("\"", "&quot;")
+					.replace("'", "&#039;");
+	}
 
 	public static String generateIFSC(int id) {
 

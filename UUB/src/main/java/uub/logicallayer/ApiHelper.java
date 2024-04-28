@@ -1,5 +1,6 @@
 package uub.logicallayer;
 
+import java.security.SecureRandom;
 import java.util.List;
 
 import uub.enums.Exceptions;
@@ -19,17 +20,19 @@ public class ApiHelper {
 
 	}
 
+	public List<ApiAuth> getAllApiAuth(int userId) throws CustomBankException{
+		
+		return apiAuthDao.getApiKeyOfUsers(userId);
+	}
+	
 	public ApiAuth getApiAuth(String key) throws CustomBankException {
 
 		ApiAuth apiAuth = apiAuthDao.getApiAuth(key);
 
-		if (apiAuth != null) {
-			
-			validateApiKey(apiAuth);
-			return apiAuth;
-		} else {
+		if (apiAuth == null || !apiAuth.isValid()) {
 			throw new CustomBankException(Exceptions.INVALID_API_KEY);
-
+		} else {
+			return apiAuth;
 		}
 	}
 	
@@ -45,17 +48,16 @@ public class ApiHelper {
 		
 		long difference = (today - createdAt)/(24*60*60*1000);
 		
-		if(difference < validity) {
-			deleteApiAuth(apiAuth.getApiKey());
+		if(difference >= validity) {
 			throw new CustomBankException(Exceptions.INVALID_API_KEY);
 		}
 		
 	}
 	
 	public void addApiAuth(ApiAuth apiAuth) throws CustomBankException{
-		
 		HelperUtils.nullCheck(apiAuth);
 		
+		apiAuth.setApiKey(generateKey());
 		apiAuth.setCreatedTime(DateUtils.getTime());
 		
 		apiAuthDao.addAPIAuth(List.of(apiAuth));
@@ -66,6 +68,23 @@ public class ApiHelper {
 		apiAuthDao.removeApiKey(apiKey);
 	}
 	
+	public String generateKey() {
+		
+		String allowedCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+		
+		int length = 32;
+		
+		 SecureRandom random = new SecureRandom();
+	     StringBuilder apiKey = new StringBuilder(length);
+	     
+        for (int i = 0; i < length; i++) {
+            int randomIndex = random.nextInt(allowedCharacters.length());
+            apiKey.append(allowedCharacters.charAt(randomIndex));
+        }
+
+        return apiKey.toString();
+		
+	}
 	
 
 }

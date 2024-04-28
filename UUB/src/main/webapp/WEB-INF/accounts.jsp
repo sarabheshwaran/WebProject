@@ -6,6 +6,9 @@
     <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%@ page import="uub.enums.EmployeeRole"%>
+<%@ page import="uub.logicallayer.AdminHelper"%>
+<%@ page import="uub.model.Branch"%>
+<%@ page import="java.util.Map"%>
 <%@ page import="uub.model.Account"%>
 <%@ page import="java.util.List"%>
 <% response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
@@ -205,12 +208,19 @@
                         <%int access = (int) request.getAttribute("access");
 				
 							if(access==1){%>
-			
-			 					   <div class="form-group">
+			 		 <div class="form-group">
                             <label for="branchId">Branch :</label>
                             <select id="branchId" name="branchId" required>
-                                <option value="1">Main Branch</option>
-                                <option value="2">Down Town Branch</option>
+							
+							<%
+							
+							AdminHelper adminHelper = new AdminHelper();
+							Map<Integer,Branch> branches = adminHelper.getAllBranches();
+							for (Map.Entry<Integer,Branch> branch : branches.entrySet()){%>
+								
+			
+                                <option value="<%=branch.getKey()%>"><%=branch.getValue().getName() %></option>
+							<%}%>
                             </select>
                         </div>
 							<%}else{ 

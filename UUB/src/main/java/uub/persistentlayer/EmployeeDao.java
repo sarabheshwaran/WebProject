@@ -15,6 +15,7 @@ import uub.model.Employee;
 import uub.persistentinterfaces.IEmployeeDao;
 import uub.staticlayer.ConnectionManager;
 import uub.staticlayer.CustomBankException;
+import uub.staticlayer.ValidationUtils;
 
 public class EmployeeDao implements IEmployeeDao {
 
@@ -96,12 +97,12 @@ public class EmployeeDao implements IEmployeeDao {
 					PreparedStatement statement2 = connection.prepareStatement(addQuery2)) {
 
 				for (Employee employee : employees) {
-					statement.setObject(1, employee.getName());
-					statement.setObject(2, employee.getEmail());
-					statement.setObject(3, employee.getPhone());
+					statement.setObject(1, ValidationUtils.sanitate(employee.getName()));
+					statement.setObject(2, ValidationUtils.sanitate(employee.getEmail()));
+					statement.setObject(3, ValidationUtils.sanitate(employee.getPhone()));
 					statement.setObject(4, employee.getDOB());
 					statement.setObject(5, employee.getGender());
-					statement.setObject(6, employee.getPassword());
+					statement.setObject(6, ValidationUtils.sanitate(employee.getPassword()));
 					statement.setObject(7, employee.getUserType().getType());
 					statement.setObject(8, employee.getStatus().getStatus());
 					statement.setObject( 9, employee.getLastModifiedBy());
@@ -225,13 +226,13 @@ public class EmployeeDao implements IEmployeeDao {
 		int index = 1;
 
 		if (employee.getName() != null) {
-			statement.setObject(index++, employee.getName());
+			statement.setObject(index++, ValidationUtils.sanitate(employee.getName()));
 		}
 		if (employee.getEmail() != null) {
-			statement.setObject(index++, employee.getEmail());
+			statement.setObject(index++, ValidationUtils.sanitate(employee.getEmail()));
 		}
 		if (employee.getPhone() != null) {
-			statement.setObject(index++, employee.getPhone());
+			statement.setObject(index++, ValidationUtils.sanitate(employee.getPhone()));
 		}
 		if (employee.getDOB() != 0) {
 			statement.setLong(index++, employee.getDOB());
@@ -240,7 +241,7 @@ public class EmployeeDao implements IEmployeeDao {
 			statement.setObject(index++, employee.getGender());
 		}
 		if (employee.getPassword() != null) {
-			statement.setObject(index++, employee.getPassword());
+			statement.setObject(index++, ValidationUtils.sanitate(employee.getPassword()));
 		}
 		if (employee.getStatus() != null) {
 			statement.setObject(index++, employee.getStatus().getStatus());

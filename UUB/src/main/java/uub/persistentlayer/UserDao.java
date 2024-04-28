@@ -13,6 +13,7 @@ import uub.persistentinterfaces.IUserDao;
 import uub.staticlayer.ConnectionManager;
 import uub.staticlayer.CustomBankException;
 import uub.staticlayer.HelperUtils;
+import uub.staticlayer.ValidationUtils;
 
 public class UserDao implements IUserDao {
 
@@ -111,13 +112,13 @@ public class UserDao implements IUserDao {
 		int index = 1;
 
 		if (user.getName() != null) {
-			statement.setObject(index++, user.getName());
+			statement.setObject(index++, ValidationUtils.sanitate(user.getName()));
 		}
 		if (user.getEmail() != null) {
-			statement.setObject(index++, user.getEmail());
+			statement.setObject(index++, ValidationUtils.sanitate(user.getEmail()));
 		}
 		if (user.getPhone() != null) {
-			statement.setObject(index++, user.getPhone());
+			statement.setObject(index++, ValidationUtils.sanitate(user.getPhone()));
 		}
 		if (user.getDOB() != 0) {
 			statement.setLong(index++, user.getDOB());
@@ -126,7 +127,7 @@ public class UserDao implements IUserDao {
 			statement.setObject(index++, user.getGender());
 		}
 		if (user.getPassword() != null) {
-			statement.setObject(index++, user.getPassword());
+			statement.setObject(index++, ValidationUtils.sanitate(user.getPassword()));
 		}
 		if (user.getUserType() != null) {
 			statement.setObject(index++, user.getUserType().getType());

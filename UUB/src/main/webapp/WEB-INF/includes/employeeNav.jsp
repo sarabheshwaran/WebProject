@@ -27,6 +27,14 @@
                     </div>Manage Customers
                 </a>
             </div>
+           		
+           		<div class="option ${page eq 'api' ? 'selected' : ''}">
+	                <a href="apiPage">
+	                    <div class="icon">
+							<i class="fa-solid fa-server"></i>
+	                    </div>Manage API Keys
+	                </a>
+           		</div>
             
 				<%int access = (int) request.getAttribute("access");
 				
@@ -38,15 +46,6 @@
 		                    <div class="icon">
 		                       <i class="fa-solid fa-users"></i>
 		                    </div>Manage Employees
-		                </a>
-            		</div>
-            		
-            		<div class="option ${page eq 'api' ? 'selected' : ''}">
-
-		                <a href="apiPage">
-		                    <div class="icon">
-								<i class="fa-solid fa-server"></i>
-		                    </div>Manage API Keys
 		                </a>
             		</div>
 				<%} %>

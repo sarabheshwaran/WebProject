@@ -8,9 +8,9 @@ public interface Cache<K,V> {
 
 	    public V get(K key) throws CustomBankException ;
 
-	    public void rem(K key) ;
+	    public void rem(K key) throws CustomBankException ;
 
-	    public void close() ;
+	    public void close() throws CustomBankException  ;
 
 	    //this is cache
 	    //dveb

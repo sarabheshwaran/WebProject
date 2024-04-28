@@ -19,11 +19,10 @@ public class ApiAuthDao implements IApiAuthDao {
 	public void addAPIAuth(List<ApiAuth> ApiAuths) throws CustomBankException {
 		HelperUtils.nullCheck(ApiAuths);
 
-		String addQuery = "INSERT INTO API_AUTH (KEY, USER_ID, SCOPE, CREATED_TIME, VALIDITY ) VALUES (?,?,?,?,?)";
+		String addQuery = "INSERT INTO API_AUTH ( API_KEY, USER_ID, SCOPE, CREATED_TIME, VALIDITY ) VALUES (?,?,?,?,?)";
 
 		try (Connection connection = ConnectionManager.getConnection();
 				PreparedStatement statement = connection.prepareStatement(addQuery);) {
-
 			for (ApiAuth apiAuth : ApiAuths) {
 
 				statement.setObject(1, apiAuth.getApiKey());
@@ -34,6 +33,7 @@ public class ApiAuthDao implements IApiAuthDao {
 				statement.addBatch();
 			}
 
+			System.out.println(statement);
 			statement.executeBatch();
 		} catch (SQLException e) {
 			throw new CustomBankException(e.getMessage());
@@ -71,7 +71,7 @@ public class ApiAuthDao implements IApiAuthDao {
 
 		ApiAuth apiAuth = new ApiAuth();
 
-		apiAuth.setApiKey(resultSet.getString("KEY"));
+		apiAuth.setApiKey(resultSet.getString("API_KEY"));
 		apiAuth.setUserId(resultSet.getInt("USER_ID"));
 		apiAuth.setScope(resultSet.getInt("SCOPE"));
 		apiAuth.setCreatedTime(resultSet.getLong("CREATED_TIME"));

@@ -1,13 +1,15 @@
 package uub.model;
 
+import uub.staticlayer.DateUtils;
+
 public class ApiAuth {
 
 	
-	String apiKey;
-	int userId;
-	int scope;
-	long createdTime;
-	int validity;
+	private String apiKey;
+	private int userId;
+	private int scope;
+	private long createdTime;
+	private int validity;
 	
 	
 	public String getApiKey() {
@@ -40,7 +42,11 @@ public class ApiAuth {
 	public void setValidity(int validity) {
 		this.validity = validity;
 	}
-	
-	
+	public boolean isValid() {
+		
+		return (createdTime + (validity * (24l*60*60*1000))) >= DateUtils.getTime();
+
+	}
+
 	
 }

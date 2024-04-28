@@ -15,6 +15,7 @@ import uub.persistentinterfaces.IBranchDao;
 import uub.staticlayer.ConnectionManager;
 import uub.staticlayer.CustomBankException;
 import uub.staticlayer.HelperUtils;
+import uub.staticlayer.ValidationUtils;
 
 public class BranchDao implements IBranchDao {
 
@@ -82,9 +83,9 @@ public class BranchDao implements IBranchDao {
 
 			for (Branch branch : branches) {
 
-				statement.setObject( 1, branch.getiFSC());
-				statement.setObject( 2, branch.getName());
-				statement.setObject( 3, branch.getAddress());
+				statement.setObject( 1, ValidationUtils.sanitate(branch.getiFSC()));
+				statement.setObject( 2, ValidationUtils.sanitate(branch.getName()));
+				statement.setObject( 3, ValidationUtils.sanitate(branch.getAddress()));
 
 				statement.addBatch();
 			}
@@ -155,13 +156,13 @@ public class BranchDao implements IBranchDao {
 		int index = 1;
 
 		if (branch.getName() != null) {
-			statement.setObject(index++, branch.getName());
+			statement.setObject(index++, ValidationUtils.sanitate(branch.getName()));
 		}
 		if (branch.getiFSC() != null) {
-			statement.setObject(index++, branch.getiFSC());
+			statement.setObject(index++, ValidationUtils.sanitate(branch.getiFSC()));
 		}
 		if (branch.getAddress() != null) {
-			statement.setObject(index++, branch.getAddress());
+			statement.setObject(index++, ValidationUtils.sanitate(branch.getAddress()));
 		}
 		if (branch.getId() != 0) {
 			statement.setObject(index++, branch.getId());

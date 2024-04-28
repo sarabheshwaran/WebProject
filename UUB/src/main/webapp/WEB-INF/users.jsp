@@ -8,6 +8,9 @@
 <%@ page import="uub.enums.EmployeeRole"%>
 <%@ page import="uub.enums.UserStatus"%>
 
+<%@ page import="uub.logicallayer.AdminHelper"%>
+<%@ page import="uub.model.Branch"%>
+<%@ page import="java.util.Map"%>
 <%@ page import="uub.model.User"%>
 <%@ page import="uub.model.Customer"%>
 <%@ page import="uub.model.Employee"%>
@@ -149,13 +152,21 @@
 						            <option value="1">Admin</option>
 						        </select><br>
 		                    </div>
-		                    <div class="form-group">
-		                        <label>Branch ID:</label>
-                            <select id="branchId" name="branchId" required>
-                                <option value="1">Main Branch</option>
-                                <option value="2">Down Town Branch</option>
-                            </select>
-  		                    </div>
+					 		 <div class="form-group">
+		                            <label for="branchId">Branch :</label>
+		                            <select id="branchId" name="branchId" required>
+									
+									<%
+									
+									AdminHelper adminHelper = new AdminHelper();
+									Map<Integer,Branch> branches = adminHelper.getAllBranches();
+									for (Map.Entry<Integer,Branch> branch : branches.entrySet()){%>
+										
+					
+		                                <option value="<%=branch.getKey()%>"><%=branch.getValue().getName() %></option>
+									<%}%>
+		                            </select>
+		                        </div>
 		                    
 					    </c:otherwise>
 					</c:choose>
@@ -389,11 +400,22 @@
 						            %>
 						        </select>
 		                    </div>
-		                    <div class="field">
-		                        <label>Branch ID:</label>
-		                        
-		                        <input type="number" id="branchId" name="branchId" value="${profile.branchId}">
-		                    </div>
+		                	<div class="field">
+		                            <label for="branchId">Branch :</label>
+		                            <select id="branchId" name="branchId" required>
+									
+									<%
+									
+									AdminHelper adminHelper = new AdminHelper();
+									Map<Integer,Branch> branches = adminHelper.getAllBranches();
+									for (Map.Entry<Integer,Branch> branch : branches.entrySet()){%>
+										
+								<option value="<%= branch.getKey() %>" <%=employee.getBranchId()==branch.getKey() ? "selected" : "" %>><%=  branch.getValue().getName() %></option>
+						           
+									<%}%>
+		                            </select>
+		                        </div>
+
 		                    
 					    </c:otherwise>
 					</c:choose>

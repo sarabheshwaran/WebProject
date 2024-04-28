@@ -79,7 +79,6 @@ public class APiController extends HttpServlet {
 
 					includeParams(customer, result, includes);
 
-					response.getWriter().print(result);
 
 				} else if (segments.length == 2 && segments[1].equals("accounts")) {
 

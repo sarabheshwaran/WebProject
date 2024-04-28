@@ -1,62 +1,47 @@
 package uub.debug;
 
-import java.util.ArrayList;
-
-import org.json.JSONObject;
-
-import uub.cachelayer.Cache;
-import uub.cachelayer.RedisCache;
-import uub.enums.TransferType;
+import uub.logicallayer.ApiHelper;
 import uub.logicallayer.CustomerHelper;
 import uub.logicallayer.EmployeeHelper;
-import uub.model.Account;
+import uub.logicallayer.UserHelper;
 import uub.model.Customer;
-import uub.model.Transaction;
 import uub.staticlayer.CustomBankException;
-import uub.staticlayer.DateUtils;
-import uub.staticlayer.HashEncoder;
 
-class Checker implements Runnable{
-
-
+class Checker implements Runnable {
 
 	@Override
 	public void run() {
 
-		Transaction transaction = new Transaction();
-
-		transaction.setId(""+Math.random()*100);
-		transaction.setAccNo(3);
-		transaction.setAmount(100);
-		transaction.setUserId(1);
-		transaction.setType(TransferType.DEPOSIT);
-		transaction.setDesc("dsfd");
-		transaction.setTime(0);
-		transaction.setStatus(0);
-
+//		Transaction transaction = new Transaction();
+//
+//		transaction.setId(""+Math.random()*100);
+//		transaction.setAccNo(3);
+//		transaction.setAmount(100);
+//		transaction.setUserId(1);
+//		transaction.setType(TransferType.DEPOSIT);
+//		transaction.setDesc("dsfd");
+//		transaction.setTime(0);
+//		transaction.setStatus(0);
 
 		try {
 			CustomerHelper a = new CustomerHelper();
-			a.makeTransaction(transaction, "sara");
+//			a.makeTransaction(transaction, "sara");
+
+			System.out.println(a.getCustomer(1));
 		} catch (CustomBankException e) {
 			e.printStackTrace();
 		}
 
 	}
 
-
-
 }
 
-
-class Checker2 implements Runnable{
-
-
+class Checker2 implements Runnable {
 
 	@Override
 	public void run() {
 
-		Customer c = new  Customer();
+		Customer c = new Customer();
 
 		c.setAadhar("12345645367890");
 		c.setPAN("dsfdg");
@@ -70,22 +55,18 @@ class Checker2 implements Runnable{
 		c.setAddress("dsf");
 //		c.setUserType(1);
 
-
 		try {
 			EmployeeHelper a = new EmployeeHelper();
-			a.addCustomer(c);
+//			System.out.println(a.addCustomer(c));
 		} catch (CustomBankException e) {
 			e.printStackTrace();
 		}
 
 	}
 
-
-
 }
 
-
-class Checker3 implements Runnable{
+class Checker3 implements Runnable {
 
 	public int x;
 
@@ -105,28 +86,28 @@ class Checker3 implements Runnable{
 
 	}
 
-
-
 }
 
 public class Debugger {
-
-
 
 	public static void main(String[] args) throws CustomBankException {
 
 //		TransactionHelper a = new TransactionHelper();
 
-		Customer a = new Customer();
-		Customer b = new Customer();
-//		
-CustomerHelper c = new CustomerHelper();
+//
 
-System.out.println(new JSONObject(c.getCustomer(85)));
-		
-		
+//	
 
+		Thread[] threadPool = new Thread[10];
+		for (int i = 0; i < 10; i++) {
+			threadPool[i] = new Thread(new Checker());
+		}
 		
+		for(Thread t : threadPool) {
+			t.start();
+		}
+
+
 	}
 
 }

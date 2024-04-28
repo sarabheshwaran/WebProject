@@ -8,14 +8,16 @@ public class Lock {
 
 
     public static Object get(int i) {
-    	Object object = hashtable.get(i);
-
-        if (object == null ) {
-            hashtable.put(i, new Object());
-            return hashtable.get(i);
-        }else {
-        return object;
-        }
+    	synchronized (("" + i).intern()) {			
+    		Object object = hashtable.get(i);
+    		
+    		if (object == null ) {
+    			hashtable.put(i, new Object());
+    			return hashtable.get(i);
+    		}else {
+    			return object;
+    		}
+		}
     }
 
 }

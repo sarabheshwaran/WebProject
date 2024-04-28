@@ -6,6 +6,12 @@
   <packaging>war</packaging>
   
   <dependencies>
+	   <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>4.0.1</version> <!-- Adjust version if needed -->
+        <scope>provided</scope>
+    </dependency>
 	  <dependency>
     <groupId>javax.servlet</groupId>
     <artifactId>jstl</artifactId>
@@ -22,15 +28,24 @@
     <version>4.0.7</version>
 </dependency>
 <dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>2.0.9</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-simple</artifactId>
+    <version>2.0.7</version>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
 		    <groupId>org.json</groupId>
 		    <artifactId>json</artifactId>
 		    <version>20140107</version>
 		</dependency>
-  	<dependency>
-  		<groupId>Bank-website</groupId>
-  		<artifactId>Bank-website</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  	</dependency>
+
   </dependencies>
   <build>
     <plugins>

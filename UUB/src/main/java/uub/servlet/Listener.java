@@ -11,6 +11,7 @@ import javax.servlet.ServletRequestAttributeListener;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionActivationListener;
 import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionBindingEvent;
@@ -36,8 +37,13 @@ public class Listener implements ServletContextListener, ServletContextAttribute
 	/**
      * @see HttpSessionListener#sessionCreated(HttpSessionEvent)
      */
-    public void sessionCreated(HttpSessionEvent arg0)  { 
+    public void sessionCreated(HttpSessionEvent event)  { 
          // TODO Auto-generated method stub
+    	
+    	HttpSession session = event.getSession();
+    	
+    	System.out.println("session "+ session.getId());
+    	System.out.println(session);
     }
 
 	/**

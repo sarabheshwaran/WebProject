@@ -28,7 +28,7 @@ public class HttpsConnection {
             connection.setRequestMethod("GET");
             
 
-            connection.setRequestProperty("Authentication", "hello"); 
+            connection.setRequestProperty("Authentication", "307325b4655d41b585029cc5445cd6ac"); 
             int responseCode = connection.getResponseCode();
             System.out.println("Response Code : " + responseCode);
 

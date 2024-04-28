@@ -17,7 +17,7 @@ import uub.persistentinterfaces.IBranchDao;
 import uub.persistentinterfaces.IEmployeeDao;
 import uub.staticlayer.CustomBankException;
 import uub.staticlayer.DateUtils;
-import uub.staticlayer.EmployeeUtils;
+import uub.staticlayer.ValidationUtils;
 import uub.staticlayer.HashEncoder;
 import uub.staticlayer.HelperUtils;
 
@@ -203,10 +203,10 @@ public class EmployeeHelper extends CustomerHelper {
 		customer.setStatus(UserStatus.ACTIVE);
 
 		try {
-			if (EmployeeUtils.validatePhone(customer.getPhone()) && EmployeeUtils.validateEmail(customer.getEmail())
-					&& EmployeeUtils.validatePass(customer.getPassword())
-					&& EmployeeUtils.validateAadhar(customer.getAadhar())
-					&& EmployeeUtils.validatePAN(customer.getPAN())) {
+			if (ValidationUtils.validatePhone(customer.getPhone()) && ValidationUtils.validateEmail(customer.getEmail())
+					&& ValidationUtils.validatePass(customer.getPassword())
+					&& ValidationUtils.validateAadhar(customer.getAadhar())
+					&& ValidationUtils.validatePAN(customer.getPAN())) {
 
 				String password = customer.getPassword();
 				customer.setPassword(HashEncoder.encode(password));
@@ -232,9 +232,9 @@ public class EmployeeHelper extends CustomerHelper {
 		try {
 			
 			
-			if (EmployeeUtils.validatePhone(customer.getPhone()) && EmployeeUtils.validateEmail(customer.getEmail())
-					&& EmployeeUtils.validateAadhar(customer.getAadhar())
-					&& EmployeeUtils.validatePAN(customer.getPAN())) {
+			if (ValidationUtils.validatePhone(customer.getPhone()) && ValidationUtils.validateEmail(customer.getEmail())
+					&& ValidationUtils.validateAadhar(customer.getAadhar())
+					&& ValidationUtils.validatePAN(customer.getPAN())) {
 
 				int count = 0;
 				customer.setId(id);

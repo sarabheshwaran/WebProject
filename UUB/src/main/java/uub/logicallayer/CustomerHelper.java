@@ -4,6 +4,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,9 +55,6 @@ public class CustomerHelper extends UserHelper {
 
 	public Customer getCustomer(int id) throws CustomBankException {
 
-		Object lock = Lock.get(id);
-
-		synchronized (lock) {
 
 		Customer customer = customerCache.get(id);
 
@@ -72,7 +71,7 @@ public class CustomerHelper extends UserHelper {
 
 		} else {
 			throw new CustomBankException(Exceptions.CUSTOMER_NOT_FOUND);
-		}}}
+		}}
 
 	}
 
@@ -90,13 +89,15 @@ public class CustomerHelper extends UserHelper {
 				accounts.put(accNo, getAccount(accNo));
 
 			}
+			
 			return accounts;
 		} else {
 			accounts = accountDao.getUserAccounts(customerId);
 
 			if (!accounts.isEmpty()) {
-
-				accountMapCache.set(customerId, new ArrayList<>(accounts.keySet()));
+				accNos =  new ArrayList<>(accounts.keySet());
+				Collections.sort(accNos);
+				accountMapCache.set(customerId,accNos);
 
 				for(Account account : accounts.values()) {
 					accountCache.set(account.getAccNo(), account);

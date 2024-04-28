@@ -20,7 +20,7 @@ import uub.staticlayer.HelperUtils;
 /**
  * Servlet Filter implementation class SessionFilter
  */
-@WebFilter("/app/user/*")
+//@WebFilter("/app/user/*")
 public class UserFilter implements Filter {
 
 

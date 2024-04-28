@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" version="3.1">
   <display-name>UUB</display-name>
+
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
     <welcome-file>index.htm</welcome-file>
@@ -10,5 +11,56 @@
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
 
-  
+<!-- <filter>
+    <filter-name>SanityFilter</filter-name>
+    <filter-class>uub.servlet.filters.SanityFilter</filter-class>
+</filter>
+
+<filter-mapping>
+    <filter-name>SanityFilter</filter-name>
+    <url-pattern>/app/*</url-pattern>
+</filter-mapping> -->
+
+<filter>
+    <filter-name>UserFilter</filter-name>
+    <filter-class>uub.servlet.filters.UserFilter</filter-class>
+</filter>
+
+<filter-mapping>
+    <filter-name>UserFilter</filter-name>
+    <url-pattern>/app/user/*</url-pattern>
+</filter-mapping>
+
+
+<filter>
+    <filter-name>Employee</filter-name>
+    <filter-class>uub.servlet.filters.EmployeeFilter</filter-class>
+</filter>
+
+<filter-mapping>
+    <filter-name>Employee</filter-name>
+    <url-pattern>/app/employee/*</url-pattern>
+</filter-mapping>
+
+	<servlet>
+    <servlet-name>Controller</servlet-name>
+    <servlet-class>uub.servlet.Controller</servlet-class>
+</servlet>
+
+<servlet-mapping>
+    <servlet-name>Controller</servlet-name>
+    <url-pattern>/app/*</url-pattern>
+</servlet-mapping>
+<error-page>
+    <error-code>404</error-code>
+    <location>/WEB-INF/errorPages/404.jsp</location>
+</error-page>
+<error-page>
+    <error-code>401</error-code>
+    <location>/WEB-INF/errorPages/401.jsp</location>
+</error-page>
+
+
+	
+
 </web-app>

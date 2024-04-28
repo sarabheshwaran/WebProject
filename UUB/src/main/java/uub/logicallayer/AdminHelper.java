@@ -12,7 +12,7 @@ import uub.model.Employee;
 import uub.persistentinterfaces.IBranchDao;
 import uub.staticlayer.CustomBankException;
 import uub.staticlayer.DateUtils;
-import uub.staticlayer.EmployeeUtils;
+import uub.staticlayer.ValidationUtils;
 import uub.staticlayer.HashEncoder;
 import uub.staticlayer.HelperUtils;
 
@@ -54,8 +54,8 @@ public class AdminHelper extends EmployeeHelper {
 		employee.setStatus(UserStatus.ACTIVE);
 
 		try {
-			if (EmployeeUtils.validatePhone(employee.getPhone()) && EmployeeUtils.validateEmail(employee.getEmail())
-					&& EmployeeUtils.validatePass(employee.getPassword())) {
+			if (ValidationUtils.validatePhone(employee.getPhone()) && ValidationUtils.validateEmail(employee.getEmail())
+					&& ValidationUtils.validatePass(employee.getPassword())) {
 
 				String password = employee.getPassword();
 				employee.setPassword(HashEncoder.encode(password));
@@ -79,7 +79,7 @@ public class AdminHelper extends EmployeeHelper {
 		int count = 0;
 		employee.setId(id);
 		try {
-			if (EmployeeUtils.validatePhone(employee.getPhone()) && EmployeeUtils.validateEmail(employee.getEmail())) {
+			if (ValidationUtils.validatePhone(employee.getPhone()) && ValidationUtils.validateEmail(employee.getEmail())) {
 				if (employee.getName().equals(compareObject.getName())) {
 					employee.setName(null);
 					count++;
@@ -129,7 +129,7 @@ public class AdminHelper extends EmployeeHelper {
 		int id = branch.getId();
 
 		branch.setId(id);
-		String ifsc = EmployeeUtils.generateIFSC(id);
+		String ifsc = ValidationUtils.generateIFSC(id);
 		branch.setiFSC(ifsc);
 
 		branchDao.addBranch(List.of(branch));

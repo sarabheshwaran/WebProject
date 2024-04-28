@@ -12,6 +12,7 @@ import uub.model.Transaction;
 import uub.persistentinterfaces.ITransactionDao;
 import uub.staticlayer.ConnectionManager;
 import uub.staticlayer.CustomBankException;
+import uub.staticlayer.ValidationUtils;
 
 public class TransactionDao implements ITransactionDao {
 
@@ -161,7 +162,7 @@ public class TransactionDao implements ITransactionDao {
 				statement.setObject(6, transaction.getAmount());
 				statement.setObject(7, transaction.getOpeningBal());
 				statement.setObject(8, transaction.getClosingBal());
-				statement.setObject(9, transaction.getDesc());
+				statement.setObject(9, ValidationUtils.sanitate(transaction.getDesc()));
 				statement.setObject(10, transaction.getTime());
 				statement.setObject(11, transaction.getStatus().getStatus());
 				statement.setObject(12, transaction.getLastModifiedBy());

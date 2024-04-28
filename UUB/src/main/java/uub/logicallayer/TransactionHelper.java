@@ -42,9 +42,8 @@ public class TransactionHelper {
 
 		}
 
-		Object lock = Lock.get(transaction.getUserId());
 
-		synchronized (lock) {
+		synchronized (Lock.get(transaction.getAccNo())) {
 
 			setTransaction(transaction);
 			transaction.setLastModifiedTime(DateUtils.getTime());
@@ -58,9 +57,8 @@ public class TransactionHelper {
 
 		transaction.setAmount(0 - transaction.getAmount());
 
-		Object lock = Lock.get(transaction.getUserId());
 
-		synchronized (lock) {
+		synchronized (Lock.get(transaction.getAccNo())) {
 			setTransaction(transaction);
 			transaction.setLastModifiedTime(DateUtils.getTime());
 
@@ -74,16 +72,21 @@ public class TransactionHelper {
 
 		Transaction rTransaction = generateReceiverTransaction(transaction);
 
-		Object lock = Lock.get(transaction.getUserId());
+		int accNo = transaction.getAccNo();
+		int rAccNo = transaction.getTransactionAcc();
+		int minNo = Math.min(accNo, rAccNo);
+		int maxNo = Math.max(accNo, rAccNo);
 
-		synchronized (lock) {
+		synchronized (Lock.get(minNo)) {
+			synchronized (Lock.get(maxNo)) {
 
-			setTransaction(transaction);
-			setTransaction(rTransaction);
+				setTransaction(transaction);
+				setTransaction(rTransaction);
 
-			transaction.setLastModifiedTime(DateUtils.getTime());
-			rTransaction.setLastModifiedTime(DateUtils.getTime());
-			transactionDao.makeTransaction(List.of(transaction, rTransaction));
+				transaction.setLastModifiedTime(DateUtils.getTime());
+				rTransaction.setLastModifiedTime(DateUtils.getTime());
+				transactionDao.makeTransaction(List.of(transaction, rTransaction));
+			}
 		}
 	}
 

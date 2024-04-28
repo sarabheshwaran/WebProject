@@ -20,7 +20,7 @@ import uub.staticlayer.HelperUtils;
 /**
  * Servlet Filter implementation class EmployeeFilter
  */
-@WebFilter("/app/employee/*")
+//@WebFilter("/app/employee/*")
 public class EmployeeFilter implements Filter {
 
     /**

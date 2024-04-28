@@ -6,6 +6,7 @@ import java.util.List;
 
 import uub.cachelayer.Cache;
 import uub.cachelayer.LRUCache;
+import uub.cachelayer.RedisCache;
 import uub.enums.Exceptions;
 import uub.enums.UserStatus;
 import uub.enums.UserType;
@@ -15,15 +16,15 @@ import uub.model.User;
 import uub.persistentinterfaces.IUserDao;
 import uub.staticlayer.CustomBankException;
 import uub.staticlayer.DateUtils;
-import uub.staticlayer.EmployeeUtils;
+import uub.staticlayer.ValidationUtils;
 import uub.staticlayer.HashEncoder;
 import uub.staticlayer.HelperUtils;
 
 public class UserHelper {
 
 	protected IUserDao userDao;
-	public static Cache<Integer,Customer> customerCache = new LRUCache<>(50);
-	public static Cache<Integer,List<Integer>>  accountMapCache = new LRUCache<>(50);
+	public static Cache<Integer,Customer> customerCache = new RedisCache<Integer, Customer>(6379);
+	public static Cache<Integer,List<Integer>>  accountMapCache = new LRUCache<Integer, List<Integer>>(40);
 	public static Cache<Integer,Account> accountCache = new LRUCache<>(50);
 
 
@@ -93,7 +94,7 @@ public class UserHelper {
 	
 	public void updatePassword(int id, String password) throws CustomBankException {
 		
-		EmployeeUtils.validatePass(password);
+		ValidationUtils.validatePass(password);
 		
 		String encodedPassword = HashEncoder.encode(password);
 		

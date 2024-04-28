@@ -2,11 +2,12 @@ package uub.servlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,11 +18,13 @@ import uub.enums.EmployeeRole;
 import uub.enums.TransferType;
 import uub.enums.UserType;
 import uub.logicallayer.AdminHelper;
+import uub.logicallayer.ApiHelper;
 import uub.logicallayer.AuditHelper;
 import uub.logicallayer.CustomerHelper;
 import uub.logicallayer.EmployeeHelper;
 import uub.logicallayer.UserHelper;
 import uub.model.Account;
+import uub.model.ApiAuth;
 import uub.model.Audit;
 import uub.model.Branch;
 import uub.model.Customer;
@@ -31,7 +34,7 @@ import uub.staticlayer.CustomBankException;
 import uub.staticlayer.DateUtils;
 import uub.staticlayer.HelperUtils;
 
-@WebServlet("/app/*")
+//@WebServlet("/app/*")
 public class Controller extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -43,8 +46,17 @@ public class Controller extends HttpServlet {
 			throws ServletException, IOException {
 
 		String path = request.getPathInfo();
+		Map<String, String[]> paramMap = request.getParameterMap();
+		
+		for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
+			String paramName = entry.getKey();
+			String[] paramValues = entry.getValue();
+			System.out.print(paramName + ": ");
+			System.out.println(Arrays.asList(paramValues));
+		}
 
 		switch (path) {
+		
 
 		case "/login": {
 
@@ -281,18 +293,20 @@ public class Controller extends HttpServlet {
 		}
 		case "/employee/manageEmployees": {
 
-			checkAccess(request, response);
+			if(!ServletHelper.checkAccess(request, response)) {
+				response.sendError(401);
+			}else {
 			String action = request.getParameter("action");
 
 			request.setAttribute("action", action);
 
 			request.setAttribute("type", "employee");
-			request.getRequestDispatcher("/WEB-INF/users.jsp").forward(request, response);
+			request.getRequestDispatcher("/WEB-INF/users.jsp").forward(request, response);}
 			break;
 		}
 		case "/employee/employee": {
 
-			checkAccess(request, response);
+			ServletHelper.checkAccess(request, response);
 			String error = request.getParameter("error");
 			String edit = request.getParameter("edit");
 			try {
@@ -328,6 +342,7 @@ public class Controller extends HttpServlet {
 
 				List<Integer> accNos = new ArrayList<Integer>(customerHelper.getAccounts(id).keySet());
 
+				Collections.sort(accNos);
 				request.setAttribute("accNos", accNos);
 
 				String type = request.getParameter("type");
@@ -355,7 +370,7 @@ public class Controller extends HttpServlet {
 				CustomerHelper customerHelper = new CustomerHelper();
 
 				List<Integer> accNos = new ArrayList<Integer>(customerHelper.getAccounts(id).keySet());
-
+				Collections.sort(accNos);
 				request.setAttribute("accNos", accNos);
 				request.setAttribute("type", "customer");
 				request.getRequestDispatcher("/WEB-INF/history.jsp").forward(request, response);
@@ -402,36 +417,22 @@ public class Controller extends HttpServlet {
 
 			break;
 		}
-		
+
 		case "/employee/apiPage": {
 
 			int empId = (int) request.getSession().getAttribute("empId");
 
 			try {
 
-				if (request.getParameter("edit") != null) {
+				ApiHelper apiHelper = new ApiHelper();
 
-					request.setAttribute("edit", "true");
+				List<ApiAuth> apiList = apiHelper.getAllApiAuth(empId);
 
-					if (request.getParameter("done") != null) {
-						request.setAttribute("done", "true");
-					} else {
-
-						String error = request.getParameter("error");
-						request.setAttribute("error", error);
-					}
-
-				} else {
-					EmployeeHelper employeeHelper = new EmployeeHelper();
-
-					Employee employee = employeeHelper.getEmployee(empId);
-
-					request.setAttribute("profile", employee);
-				}
-
+				request.setAttribute("apiList", apiList);
 				request.setAttribute("type", "employee");
 				request.getRequestDispatcher("/WEB-INF/apiPage.jsp").forward(request, response);
 			} catch (CustomBankException e) {
+				e.printStackTrace();
 				request.setAttribute("error", e.getMessage());
 				response.sendRedirect("app/login");
 			}
@@ -441,7 +442,7 @@ public class Controller extends HttpServlet {
 
 		default: {
 
-			request.getRequestDispatcher("/WEB-INF/404.jsp").forward(request, response);
+			response.sendError(404);
 		}
 
 		}
@@ -459,9 +460,7 @@ public class Controller extends HttpServlet {
 			String paramName = entry.getKey();
 			String[] paramValues = entry.getValue();
 			System.out.print(paramName + ": ");
-			for (String paramValue : paramValues) {
-				System.out.print(paramValue + " ");
-			}
+System.out.println(Arrays.asList(paramValues));
 		}
 
 		switch (pathInfo) {
@@ -476,7 +475,7 @@ public class Controller extends HttpServlet {
 			try {
 
 				int userId = HelperUtils.formatNumber(request.getParameter("userId"));
-				
+
 				audit.setUserId(userId);
 				audit.setTime(DateUtils.getTime());
 				audit.setAction(AuditAction.LOGIN);
@@ -671,6 +670,7 @@ public class Controller extends HttpServlet {
 					AuditHelper.addAudit(audit);
 				} catch (CustomBankException e) {
 					e.printStackTrace();
+					response.sendError(401);
 				}
 			}
 
@@ -716,10 +716,16 @@ public class Controller extends HttpServlet {
 		case "/user/history": {
 
 			try {
+				int id = (int) request.getSession().getAttribute("userId");
+
 				request.setAttribute("type", "customer");
 
-				historyPage(request);
+				ServletHelper.historyPage(request);
+				CustomerHelper customerHelper = new CustomerHelper();
 
+				List<Integer> accNos = new ArrayList<Integer>(customerHelper.getAccounts(id).keySet());
+				Collections.sort(accNos);
+				request.setAttribute("accNos", accNos);
 				request.getRequestDispatcher("/WEB-INF/history.jsp").forward(request, response);
 
 			} catch (CustomBankException e) {
@@ -733,8 +739,8 @@ public class Controller extends HttpServlet {
 			try {
 				request.setAttribute("type", "employee");
 
-				historyPage(request);
-				
+				ServletHelper.historyPage(request);
+
 				request.getRequestDispatcher("/WEB-INF/history.jsp").forward(request, response);
 
 			} catch (CustomBankException e) {
@@ -829,7 +835,7 @@ public class Controller extends HttpServlet {
 				EmployeeHelper employeeHelper = new EmployeeHelper();
 
 				employeeHelper.addAccount(account);
-				
+
 				audit.setTargetId(userId);
 				audit.setResult(AuditResult.SUCCESS);
 				request.setAttribute("success", "true");
@@ -856,7 +862,6 @@ public class Controller extends HttpServlet {
 		}
 
 		case "/employee/editCustomer": {
-			
 
 			int empId = (int) request.getSession().getAttribute("empId");
 
@@ -880,14 +885,14 @@ public class Controller extends HttpServlet {
 
 					case "Activate": {
 
-						employeeHelper.activateUser(customerId,empId);
+						employeeHelper.activateUser(customerId, empId);
 						audit.setDesc("Customer Activated");
 
 						break;
 					}
 					case "Deactivate": {
 
-						employeeHelper.deActivateUser(customerId,empId);
+						employeeHelper.deActivateUser(customerId, empId);
 						audit.setDesc("Customer Deactivated");
 
 						break;
@@ -896,13 +901,13 @@ public class Controller extends HttpServlet {
 					}
 				} else {
 
-					Customer customer = mapCustomer(request);
-					
+					Customer customer = ServletHelper.mapCustomer(request);
+
 					customer.setLastModifiedBy(empId);
 					employeeHelper.editCustomer(customerId, customer);
-					
+
 				}
-				
+
 				audit.setResult(AuditResult.SUCCESS);
 				response.sendRedirect(request.getContextPath() + "/app/employee/customer?customerId=" + customerId);
 
@@ -912,7 +917,7 @@ public class Controller extends HttpServlet {
 				response.sendRedirect(request.getContextPath() + "/app/employee/customer?edit=true&customerId="
 						+ customerId + "&error=" + e.getFullMessage());
 
-			}finally {
+			} finally {
 
 				try {
 					AuditHelper.addAudit(audit);
@@ -932,13 +937,11 @@ public class Controller extends HttpServlet {
 			audit.setTime(DateUtils.getTime());
 			audit.setAction(AuditAction.USER_ADD);
 
-			
 			try {
-				Customer customer = mapCustomer(request);
+				Customer customer = ServletHelper.mapCustomer(request);
 				customer.setLastModifiedBy(empId);
 				audit.setDesc("Customer Creation");
-				
-				
+
 				EmployeeHelper employeeHelper = new EmployeeHelper();
 
 				employeeHelper.addCustomer(customer);
@@ -966,13 +969,11 @@ public class Controller extends HttpServlet {
 			break;
 		}
 
-
-		
-
 		case "/employee/editEmployee": {
 
-			checkAccess(request, response);
-			
+			if(!ServletHelper.checkAccess(request, response)) {
+				response.sendError(401);
+			}else {
 			int id = (int) request.getSession().getAttribute("empId");
 
 			Audit audit = new Audit();
@@ -980,14 +981,13 @@ public class Controller extends HttpServlet {
 			audit.setTime(DateUtils.getTime());
 			audit.setAction(AuditAction.USER_UPDATE);
 
-			
 			int empId = 0;
 			try {
 
 				empId = HelperUtils.formatNumber(request.getParameter("employeeId"));
 
 				audit.setTargetId(empId);
-				
+
 				AdminHelper adminHelper = new AdminHelper();
 
 				String status = request.getParameter("status");
@@ -996,16 +996,16 @@ public class Controller extends HttpServlet {
 					switch (status) {
 
 					case "Activate": {
-						
+
 						audit.setDesc("Employee Activated");
-						adminHelper.activateUser(empId,id);
+						adminHelper.activateUser(empId, id);
 
 						break;
 					}
 					case "Deactivate": {
 
 						audit.setDesc("Employee Deactivated");
-						adminHelper.deActivateUser(empId,id);
+						adminHelper.deActivateUser(empId, id);
 
 						break;
 					}
@@ -1013,17 +1013,17 @@ public class Controller extends HttpServlet {
 					}
 				} else {
 
-					Employee employee = mapEmployee(request);
+					Employee employee = ServletHelper.mapEmployee(request);
 					employee.setLastModifiedBy(id);
 					adminHelper.editEmployee(empId, employee);
 				}
 
 				audit.setResult(AuditResult.SUCCESS);
-				
+
 				response.sendRedirect(request.getContextPath() + "/app/employee/employee?employeeId=" + empId);
 
 			} catch (CustomBankException e) {
-				
+
 				audit.setResult(AuditResult.FAILURE);
 				audit.setDesc(e.getFullMessage());
 				response.sendRedirect(request.getContextPath() + "/app/employee/employee?edit=true&employeeId=" + empId
@@ -1035,14 +1035,14 @@ public class Controller extends HttpServlet {
 				} catch (CustomBankException e) {
 					e.printStackTrace();
 				}
-			}
+			}}
 			break;
 		}
 
 		case "/employee/createEmployee": {
 
-			checkAccess(request, response);
-			
+			ServletHelper.checkAccess(request, response);
+
 			int empId = (int) request.getSession().getAttribute("empId");
 
 			Audit audit = new Audit();
@@ -1050,9 +1050,8 @@ public class Controller extends HttpServlet {
 			audit.setTime(DateUtils.getTime());
 			audit.setAction(AuditAction.USER_ADD);
 
-			
 			try {
-				Employee employee = mapEmployee(request);
+				Employee employee = ServletHelper.mapEmployee(request);
 				employee.setLastModifiedBy(empId);
 				audit.setDesc("Employee Creation");
 
@@ -1082,158 +1081,71 @@ public class Controller extends HttpServlet {
 
 			break;
 		}
-		case "/user/createApiAuth":
-		case "/employee/createApiAuth":{
+		case "/employee/createApi": {
 
-			
-			
-		break;
-		}
-		
-		}
-	}
+			ApiHelper apiHelper = new ApiHelper();
+			int empId = (int) request.getSession().getAttribute("empId");
+			EmployeeRole role = (EmployeeRole) request.getSession().getAttribute("role");
+			ApiAuth apiAuth = new ApiAuth();
 
-	private void historyPage(HttpServletRequest request) throws CustomBankException {
-
-		int id = 0;
-
-		if (request.getSession().getAttribute("empId") != null) {
-			id = (int) request.getSession().getAttribute("empId");
-		} else {
-
-			id = (int) request.getSession().getAttribute("userId");
-		}
-		
-		Audit audit = new Audit();
-		audit.setAction(AuditAction.ACCOUNT_STATEMENT);
-		audit.setUserId(id);
-		audit.setTime(DateUtils.getTime());
-		audit.setResult(AuditResult.SUCCESS);
-		
-		
-		
-		int accNo = HelperUtils.formatNumber(request.getParameter("accNo"));
-		
-		audit.setTargetId(accNo);
-
-		String from = request.getParameter("startDate");
-		String to = request.getParameter("endDate");
-
-		int pageNo = 0;
-		if(request.getParameter("pageNo") != null) {
-			pageNo =  HelperUtils.formatNumber(request.getParameter("pageNo"));
-		}
-		
-		CustomerHelper customerHelper = new CustomerHelper();
-
-		List<Transaction> transactions = customerHelper.getTransaction(accNo, from, to, 10, pageNo);
-
-		int transactionCount = customerHelper.getTransactionCount(accNo, from, to, 10, pageNo);
-		int pageCount = (int) Math.ceil(((double) transactionCount) / 10);
-
-		request.setAttribute("transactions", transactions);
-		request.setAttribute("pageCount", pageCount);
-		request.setAttribute("pageNo", pageNo);
-		
-		try {
-			if(pageNo == 0) {
-			AuditHelper.addAudit(audit);
+			if(role.equals(EmployeeRole.ADMIN)) {
+				apiAuth.setScope(1);
+			}else {
+				apiAuth.setScope(0);
 			}
-		} catch (CustomBankException e) {
-			e.printStackTrace();
+			apiAuth.setValidity(7);
+			apiAuth.setUserId(empId);
+			try {
+
+				apiHelper.addApiAuth(apiAuth);
+
+			} catch (CustomBankException e) {
+				e.printStackTrace();
+			} finally {
+				List<ApiAuth> apiList;
+				try {
+					apiList = apiHelper.getAllApiAuth(empId);
+					request.setAttribute("apiList", apiList);
+				} catch (CustomBankException e) {
+
+					e.printStackTrace();
+				}
+
+				request.setAttribute("type", "employee");
+				request.getRequestDispatcher("/WEB-INF/apiPage.jsp").forward(request, response);
+			}
+		}
+		case "/employee/deleteApi": {
+
+			String apiKey = request.getParameter("apiKey");
+
+			ApiHelper apiHelper = new ApiHelper();
+			int empId = (int) request.getSession().getAttribute("empId");
+			try {
+
+				apiHelper.deleteApiAuth(apiKey);
+
+			} catch (CustomBankException e) {
+
+			} finally {
+				List<ApiAuth> apiList;
+				try {
+					apiList = apiHelper.getAllApiAuth(empId);
+					request.setAttribute("apiList", apiList);
+				} catch (CustomBankException e) {
+
+					e.printStackTrace();
+				}
+
+				request.setAttribute("type", "employee");
+				request.getRequestDispatcher("/WEB-INF/apiPage.jsp").forward(request, response);
+			}
+
+			break;
+		}
+
 		}
 	}
-	
 
-	private void checkAccess(HttpServletRequest request, HttpServletResponse response)
-			throws IOException, ServletException {
-		EmployeeRole role = (EmployeeRole) request.getSession().getAttribute("role");
-
-		if (!role.equals(EmployeeRole.ADMIN)) {
-			request.getRequestDispatcher("/WEB-INF/401.jsp").forward(request, response);
-		}
-	}
-
-	private Customer mapCustomer(HttpServletRequest request) throws CustomBankException {
-
-		String name = request.getParameter("name");
-		String email = request.getParameter("email");
-		String phone = request.getParameter("phone");
-
-		String dob = request.getParameter("dob");
-
-		long dateOfBirth = 0l;
-		if (dob != null) {
-			dateOfBirth = DateUtils.formatDate(DateUtils.formatDateString(dob));
-		}
-
-		DateUtils.isAdult(dateOfBirth);
-
-		String gender = request.getParameter("gender");
-		String aadhar = request.getParameter("aadhar");
-		String pan = request.getParameter("pan");
-		String address = request.getParameter("address");
-		String password = request.getParameter("password");
-
-		Customer customer = new Customer();
-
-		customer.setName(name);
-		customer.setEmail(email);
-		customer.setPhone(phone);
-		customer.setDOB(dateOfBirth);
-		customer.setGender(gender);
-		customer.setAadhar(aadhar);
-		customer.setPAN(pan);
-		customer.setAddress(address);
-		customer.setPassword(password);
-
-		return customer;
-	}
-
-	private Employee mapEmployee(HttpServletRequest request) throws CustomBankException {
-
-		String name = request.getParameter("name");
-		String email = request.getParameter("email");
-		String phone = request.getParameter("phone");
-
-		String dob = request.getParameter("dob");
-
-		long dateOfBirth = 0l;
-		if (dob != null) {
-			dateOfBirth = DateUtils.formatDate(DateUtils.formatDateString(dob));
-		}
-
-		DateUtils.isAdult(dateOfBirth);
-
-		String gender = request.getParameter("gender");
-		String password = request.getParameter("password");
-
-		String roleString = request.getParameter("role");
-
-		int role = 0;
-		if (roleString != null) {
-			role = HelperUtils.formatNumber(roleString);
-		}
-
-		String branch = request.getParameter("branchId");
-
-		int branchId = 0;
-		if (branch != null) {
-			branchId = HelperUtils.formatNumber(branch);
-		}
-
-		Employee employee = new Employee();
-
-		employee.setName(name);
-		employee.setEmail(email);
-		employee.setPhone(phone);
-		employee.setDOB(dateOfBirth);
-		employee.setGender(gender);
-		employee.setRole(role);
-		employee.setBranchId(branchId);
-		employee.setPassword(password);
-
-		return employee;
-	}
 
 }

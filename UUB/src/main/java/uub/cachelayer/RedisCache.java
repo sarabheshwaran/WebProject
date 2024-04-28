@@ -9,19 +9,24 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 import uub.staticlayer.CustomBankException;
 
 public class RedisCache<K, V> implements Cache<K,V>{
-
-    private final Jedis jedis;
-
+	private JedisPool jedisPool;
     public RedisCache(int port) {
-        this.jedis = new Jedis("localhost", port);
+    	JedisPoolConfig poolConfig = new JedisPoolConfig();
+    	poolConfig.setMaxTotal(10);
+    	poolConfig.setMaxIdle(5);
+    	
+    	jedisPool = new JedisPool(poolConfig, "localhost", port);
     }
 
     @Override
 	public void set(K key, V value) throws CustomBankException {
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (Jedis jedis = jedisPool.getResource();
+        		ByteArrayOutputStream bos = new ByteArrayOutputStream();
              ObjectOutputStream oos = new ObjectOutputStream(bos)) {
 
             oos.writeObject(value);
@@ -36,32 +41,45 @@ public class RedisCache<K, V> implements Cache<K,V>{
 
     @Override
 	public V get(K key) throws CustomBankException {
-        byte[] bytes = jedis.get(key.toString().getBytes());
-
-        if (bytes != null) {
-            try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-                 ObjectInput in = new ObjectInputStream(bis)) {
-
-                @SuppressWarnings("unchecked")
-                V deserializedValue = (V) in.readObject();
-                return deserializedValue;
-
-            } catch (IOException | ClassNotFoundException e) {
-            	e.printStackTrace();
-            	throw new CustomBankException("Incorrect casting");
-            }
+    	try(Jedis jedis = jedisPool.getResource()){
+	        byte[] bytes = jedis.get(key.toString().getBytes());
+	
+	        if (bytes != null) {
+	            try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+	                 ObjectInput in = new ObjectInputStream(bis)) {
+	
+	                @SuppressWarnings("unchecked")
+	                V deserializedValue = (V) in.readObject();
+	                return deserializedValue;
+	
+	            } catch (IOException | ClassNotFoundException e) {
+	            	e.printStackTrace();
+	            	throw new CustomBankException("Incorrect casting");
+	            }
+	        }
+    	}
+        catch(Exception e) {
+        	throw new CustomBankException(e);
         }
         return null;
     }
 
     @Override
-	public void rem(K key) {
-        jedis.del(key.toString().getBytes());
+	public void rem(K key) throws CustomBankException {
+    	try(Jedis jedis = jedisPool.getResource()){
+        jedis.unlink(key.toString().getBytes());
+        }catch (Exception e) {
+        	throw new CustomBankException(e);
+		}
     }
 
     @Override
-	public void close() {
+	public void close() throws CustomBankException {
+    	try(Jedis jedis = jedisPool.getResource()){
         jedis.close();
+    	 }catch (Exception e) {
+         	throw new CustomBankException(e);
+ 		}
     }
 
 

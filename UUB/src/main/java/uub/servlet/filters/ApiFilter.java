@@ -13,6 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 
+import uub.logicallayer.ApiHelper;
+import uub.model.ApiAuth;
+import uub.staticlayer.CustomBankException;
+import uub.staticlayer.HelperUtils;
+
 /**
  * Servlet Filter implementation class ApiFilter
  */
@@ -41,22 +46,30 @@ public class ApiFilter implements Filter {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		
+		
+		
 		String apiKey = httpRequest.getHeader("Authentication");
 		
-		if(apiKey != null && apiKey.equals("hello")) {
+		ApiHelper apiHelper = new ApiHelper();
+		JSONObject result = new JSONObject();
+		
+		try {
+			ApiAuth apiAuth = apiHelper.getApiAuth(apiKey);
+			HelperUtils.nullCheck(apiAuth);
 			
-			chain.doFilter(request, response);
+			String method = httpRequest.getMethod();
 			
-		}
-		else {
+			if (method.equals("GET") || (apiAuth.getScope() > 0 && !method.equals("GET"))) {
+			    chain.doFilter(request, response);
+			}
 			
-			JSONObject result = new JSONObject();
-			
+		} catch (CustomBankException e) {
+
 			result.put("result", "failed");
 			result.put("response-code", "401");
 			result.put("cause", "authentication failed");
-			
 			httpResponse.getWriter().print(result);
+			e.printStackTrace();
 		}
 		
 	}

@@ -138,7 +138,7 @@ public class AccountDao implements IAccountDao {
 				statement.setObject(4, account.getBalance());
 				statement.setObject(5, account.getStatus().getStatus());
 				statement.setObject(6, account.getLastModifiedBy());
-				statement.setObject(6, account.getLastModifiedTime());
+				statement.setObject(7, account.getLastModifiedTime());
 
 				statement.addBatch();
 			}

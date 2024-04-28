@@ -13,6 +13,7 @@ import uub.persistentinterfaces.ICustomerDao;
 import uub.staticlayer.ConnectionManager;
 import uub.staticlayer.CustomBankException;
 import uub.staticlayer.HelperUtils;
+import uub.staticlayer.ValidationUtils;
 
 public class CustomerDao implements ICustomerDao {
 
@@ -36,12 +37,12 @@ public class CustomerDao implements ICustomerDao {
 
 
 			for (Customer customer : customers) {
-				statement.setObject( 1, customer.getName());
-				statement.setObject( 2, customer.getEmail());
-				statement.setObject( 3, customer.getPhone());
+				statement.setObject( 1, ValidationUtils.sanitate(customer.getName()));
+				statement.setObject( 2, ValidationUtils.sanitate(customer.getEmail()));
+				statement.setObject( 3, ValidationUtils.sanitate(customer.getPhone()));
 				statement.setObject( 4, customer.getDOB());
 				statement.setObject( 5, customer.getGender());
-				statement.setObject( 6, customer.getPassword());
+				statement.setObject( 6, ValidationUtils.sanitate(customer.getPassword()));
 				statement.setObject( 7, customer.getUserType().getType());
 				statement.setObject( 8, customer.getStatus().getStatus());
 				statement.setObject( 9, customer.getLastModifiedBy());
@@ -57,9 +58,9 @@ public class CustomerDao implements ICustomerDao {
 					int id = resultSet.getInt(1);
 					Customer customer = customers.get(index);
 					statement2.setObject( 1, id);
-					statement2.setObject( 2, customer.getAadhar());
-					statement2.setObject( 3, customer.getPAN());
-					statement2.setObject( 4, customer.getAddress());
+					statement2.setObject( 2, ValidationUtils.sanitate(customer.getAadhar()));
+					statement2.setObject( 3, ValidationUtils.sanitate(customer.getPAN()));
+					statement2.setObject( 4, ValidationUtils.sanitate(customer.getAddress()));
 
 					statement2.addBatch();
 					index++;
@@ -197,18 +198,18 @@ public class CustomerDao implements ICustomerDao {
 
 	}
 
-	private void setValues(PreparedStatement statement, Customer customer) throws SQLException {
+	private void setValues(PreparedStatement statement, Customer customer) throws SQLException{
 
 		int index = 1;
 
 		if (customer.getName() != null) {
-			statement.setObject(index++, customer.getName());
+			statement.setObject(index++, ValidationUtils.sanitate(customer.getName()));
 		}
 		if (customer.getEmail() != null) {
-			statement.setObject(index++, customer.getEmail());
+			statement.setObject(index++, ValidationUtils.sanitate(customer.getEmail()));
 		}
 		if (customer.getPhone() != null) {
-			statement.setObject(index++, customer.getPhone());
+			statement.setObject(index++, ValidationUtils.sanitate(customer.getPhone()));
 		}
 		if (customer.getDOB() != 0) {
 			statement.setLong(index++, customer.getDOB());
@@ -217,19 +218,19 @@ public class CustomerDao implements ICustomerDao {
 			statement.setObject(index++, customer.getGender());
 		}
 		if (customer.getPassword() != null) {
-			statement.setObject(index++, customer.getPassword());
+			statement.setObject(index++, ValidationUtils.sanitate(customer.getPassword()));
 		}
 		if (customer.getStatus() != null) {
 			statement.setObject(index++, customer.getStatus().getStatus());
 		}
 		if (customer.getAadhar() != null) {
-			statement.setObject(index++, customer.getAadhar());
+			statement.setObject(index++, ValidationUtils.sanitate(customer.getAadhar()));
 		}
 		if (customer.getPAN() != null) {
-			statement.setObject(index++, customer.getPAN());
+			statement.setObject(index++, ValidationUtils.sanitate(customer.getPAN()));
 		}
 		if (customer.getAddress() != null) {
-			statement.setObject(index++, customer.getAddress());
+			statement.setObject(index++, ValidationUtils.sanitate(customer.getAddress()));
 		}
 		if (customer.getLastModifiedTime() != 0) {
 			statement.setLong(index++, customer.getLastModifiedTime());
