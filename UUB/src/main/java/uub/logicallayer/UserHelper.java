@@ -7,10 +7,13 @@ import java.util.List;
 import uub.cachelayer.Cache;
 import uub.cachelayer.LRUCache;
 import uub.cachelayer.RedisCache;
+import uub.enums.AuditAction;
+import uub.enums.AuditResult;
 import uub.enums.Exceptions;
 import uub.enums.UserStatus;
 import uub.enums.UserType;
 import uub.model.Account;
+import uub.model.Audit;
 import uub.model.Customer;
 import uub.model.User;
 import uub.persistentinterfaces.IUserDao;
@@ -26,6 +29,8 @@ public class UserHelper {
 	public static Cache<Integer,Customer> customerCache = new RedisCache<Integer, Customer>(6379);
 	public static Cache<Integer,List<Integer>>  accountMapCache = new LRUCache<Integer, List<Integer>>(40);
 	public static Cache<Integer,Account> accountCache = new LRUCache<>(50);
+	
+	public static ThreadLocal<Integer> currentUserId = new ThreadLocal<Integer>();
 
 
 	public UserHelper() throws CustomBankException {
@@ -76,8 +81,13 @@ public class UserHelper {
 	public UserType login(int id, String password) throws CustomBankException {
 
 		HelperUtils.nullCheck(password);
-
+		Audit audit = new Audit();
 		try {
+			audit.setUserId(id);
+			audit.setTime(DateUtils.getTime());
+			audit.setAction(AuditAction.LOGIN);
+			audit.setTargetId(id);
+			audit.setResult(AuditResult.SUCCESS);
 
 			User user = getUser(id);
 
@@ -87,7 +97,15 @@ public class UserHelper {
 
 
 		} catch (CustomBankException e) {
+			audit.setResult(AuditResult.FAILURE);
+			audit.setDesc(e.getFullMessage());
 			throw new CustomBankException(Exceptions.LOGIN_FAILED, e);
+		}finally {
+			try {
+				AuditHelper.addAudit(audit);
+			} catch (CustomBankException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}

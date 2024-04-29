@@ -48,8 +48,9 @@
                         </thead>
                     	 <c:forEach var="api" items="${apiList}">
                             <tr>
-	                            <td>${api.apiKey}</td>
-	                            <td>${api.createdTime}</td>
+	                            <td>${api.apiKey}</td>  
+    
+	                            <td>${ DateUtils.formatTime(api.createdTime) }</td>
 	                            <td>${api.validity}</td>
 	                            <td>
 	                                <div style="width: 100%;display: flex;justify-content: center;">

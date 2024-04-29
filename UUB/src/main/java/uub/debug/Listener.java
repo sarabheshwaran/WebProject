@@ -42,7 +42,7 @@ public class Listener implements HttpSessionActivationListener, HttpSessionAttri
          // TODO Auto-generated method stub
  Logger logger = Logger.getGlobal();
          
-         logger.severe("Session attr added : "+ arg0.getSession().getAttributeNames() +" : "+ arg0.getSession().getValue(null));
+         logger.severe("Session attr added : "+ arg0.getSession().getAttributeNames() +" : "+ arg0.getSession());
     }
 
 	/**

@@ -3,8 +3,6 @@ package uub.cachelayer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import uub.staticlayer.CustomBankException;
-
 public class LRUCache<K, V> extends LinkedHashMap<K, V> implements Cache<K, V>{
     private static final long serialVersionUID = 1L;
 

@@ -1,9 +1,10 @@
 package uub.debug;
 
-import uub.logicallayer.ApiHelper;
+import java.io.Serializable;
+
+import uub.cachelayer.Cache;
+import uub.cachelayer.RedisCache;
 import uub.logicallayer.CustomerHelper;
-import uub.logicallayer.EmployeeHelper;
-import uub.logicallayer.UserHelper;
 import uub.model.Customer;
 import uub.staticlayer.CustomBankException;
 
@@ -54,13 +55,13 @@ class Checker2 implements Runnable {
 		c.setStatus(0);
 		c.setAddress("dsf");
 //		c.setUserType(1);
-
-		try {
-			EmployeeHelper a = new EmployeeHelper();
+//
+//		try {
+//			EmployeeHelper a = new EmployeeHelper();
 //			System.out.println(a.addCustomer(c));
-		} catch (CustomBankException e) {
-			e.printStackTrace();
-		}
+//		} catch (CustomBankException e) {
+//			e.printStackTrace();
+//		}
 
 	}
 
@@ -87,25 +88,49 @@ class Checker3 implements Runnable {
 	}
 
 }
+ class MyClass implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
+    // Singleton instance
+    private static final MyClass INSTANCE = new MyClass();
+    
+    // Private constructor to prevent instantiation
+    private MyClass() {
+        // Initialization code here
+    }
+    
+    // Public method to access the singleton instance
+    public static MyClass getInstance() {
+        return INSTANCE;
+    }
+    
+    // Override readResolve method to ensure singleton behavior during deserialization
+    protected Object readResolve() {
+        // Return the singleton instance to ensure only one instance is used
+        return INSTANCE;
+    }
+}
+class Lock implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
+	protected Lock readResolve(){
+		return this;
+	}
+}
 
 public class Debugger {
 
 	public static void main(String[] args) throws CustomBankException {
-
-//		TransactionHelper a = new TransactionHelper();
-
-//
-
-//	
-
-		Thread[] threadPool = new Thread[10];
-		for (int i = 0; i < 10; i++) {
-			threadPool[i] = new Thread(new Checker());
-		}
 		
-		for(Thread t : threadPool) {
-			t.start();
-		}
+		Cache<String,MyClass> c = new RedisCache<String, MyClass>(6380);
+		
+		MyClass lock1 = MyClass.getInstance();
+		
+		c.set("a", lock1);
+		
+		MyClass lock2 = c.get("a");
+		
+		System.out.println(lock1==lock2);
 
 
 	}

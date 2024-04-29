@@ -471,16 +471,10 @@ System.out.println(Arrays.asList(paramValues));
 
 		case "/login": {
 
-			Audit audit = new Audit();
 			try {
 
 				int userId = HelperUtils.formatNumber(request.getParameter("userId"));
 
-				audit.setUserId(userId);
-				audit.setTime(DateUtils.getTime());
-				audit.setAction(AuditAction.LOGIN);
-				audit.setTargetId(userId);
-				audit.setResult(AuditResult.SUCCESS);
 
 				String password = request.getParameter("password");
 
@@ -512,18 +506,9 @@ System.out.println(Arrays.asList(paramValues));
 
 			} catch (CustomBankException e) {
 
-				audit.setResult(AuditResult.FAILURE);
-				audit.setDesc(e.getFullMessage());
 				request.setAttribute("error", e.getFullMessage());
 				request.getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
-			} finally {
-
-				try {
-					AuditHelper.addAudit(audit);
-				} catch (CustomBankException e) {
-					e.printStackTrace();
-				}
-			}
+			} 
 			break;
 		}
 
@@ -536,19 +521,16 @@ System.out.println(Arrays.asList(paramValues));
 
 			int id = (int) request.getSession().getAttribute("userId");
 
+			CustomerHelper.currentUserId.set(id);
 			String password = request.getParameter("password");
 			String type = request.getParameter("type");
 			String desc = request.getParameter("desc");
 
-			Audit audit = new Audit();
-			Audit audit2 = null;
-			audit.setUserId(id);
 
 			try {
 				int accNo = HelperUtils.formatNumber(request.getParameter("senderAccount"));
 				double amount = HelperUtils.formatDouble(request.getParameter("amount"));
 
-				audit.setTime(DateUtils.getTime());
 
 				Transaction transaction = new Transaction();
 
@@ -558,52 +540,30 @@ System.out.println(Arrays.asList(paramValues));
 				transaction.setAmount(amount);
 				transaction.setLastModifiedBy(id);
 
-				audit.setTargetId(accNo);
 
 				CustomerHelper customerHelper = new CustomerHelper();
 
 				switch (type) {
 				case "deposit": {
-					audit.setAction(AuditAction.DEPOSIT);
 					transaction.setType(TransferType.DEPOSIT);
 					break;
 				}
 				case "withdraw": {
 
-					audit.setAction(AuditAction.WITHDRAW);
 					transaction.setType(TransferType.WITHDRAW);
 					break;
 				}
 				case "interbank": {
 
-					audit.setAction(AuditAction.TRANSACTION);
-					audit.setDesc("interbank");
-					audit2 = new Audit();
-					audit2.setUserId(id);
-					audit2.setTime(DateUtils.getTime());
-					audit2.setAction(AuditAction.TRANSACTION);
-					audit2.setDesc("interbank");
-					audit2.setResult(AuditResult.SUCCESS);
 					int transactionAcc = HelperUtils.formatNumber(request.getParameter("receiverAccount"));
 					transaction.setTransactionAcc(transactionAcc);
 					transaction.setType(TransferType.INTER_BANK);
-					audit2.setTargetId(transactionAcc);
 					break;
 				}
 				case "intrabank": {
-
-					audit.setAction(AuditAction.TRANSACTION);
-					audit.setDesc("intrabank");
-					audit2 = new Audit();
-					audit2.setUserId(id);
-					audit2.setTime(DateUtils.getTime());
-					audit2.setAction(AuditAction.TRANSACTION);
-					audit2.setDesc("intrabank");
-					audit2.setResult(AuditResult.SUCCESS);
 					int transactionAcc = HelperUtils.formatNumber(request.getParameter("receiverAccount"));
 					transaction.setTransactionAcc(transactionAcc);
 					transaction.setType(TransferType.INTRA_BANK);
-					audit2.setTargetId(transactionAcc);
 					break;
 				}
 				default:
@@ -611,7 +571,6 @@ System.out.println(Arrays.asList(paramValues));
 				}
 
 				customerHelper.makeTransaction(transaction, password);
-				audit.setResult(AuditResult.SUCCESS);
 
 				request.setAttribute("type", type);
 				request.setAttribute("done", true);
@@ -619,21 +578,9 @@ System.out.println(Arrays.asList(paramValues));
 
 			} catch (CustomBankException e) {
 				e.printStackTrace();
-				audit.setResult(AuditResult.FAILURE);
-				audit.setDesc(e.getFullMessage());
 				request.setAttribute("type", type);
 				request.setAttribute("error", e.getFullMessage());
 				doGet(request, response);
-			} finally {
-				try {
-					AuditHelper.addAudit(audit);
-					if (audit2 != null) {
-						AuditHelper.addAudit(audit2);
-					}
-				} catch (CustomBankException e) {
-					e.printStackTrace();
-				}
-
 			}
 
 			break;

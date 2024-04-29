@@ -68,12 +68,13 @@ public class ValidationUtils {
 		}
 	}
 
-	public static String sanitate(String input)  {
-		return input.replace("&", "&amp;")
-					.replace("<", "&lt;")
-					.replace(">", "&gt;")
-					.replace("\"", "&quot;")
+	public static String sanitate(String input) {
+		if (input == null) {
+			return input;
+		} else {
+			return input.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;")
 					.replace("'", "&#039;");
+		}
 	}
 
 	public static String generateIFSC(int id) {

@@ -1,7 +1,5 @@
 package uub.logicallayer;
 
-import java.util.List;
-
 import org.json.JSONObject;
 
 import uub.model.Account;
