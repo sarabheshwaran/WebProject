@@ -58,6 +58,7 @@ public class UserFilter implements Filter {
 			Customer customer = customerHelper.getCustomer(userId);
 			
 			if(customer.getStatus()==UserStatus.INACTIVE) {
+				session.invalidate();
 				throw new CustomBankException(Exceptions.DEACTIVATED_USER);
 			}
 			
