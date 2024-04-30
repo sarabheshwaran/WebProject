@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import uub.enums.Exceptions;
+import uub.enums.UserStatus;
 import uub.logicallayer.CustomerHelper;
 import uub.model.Customer;
 import uub.staticlayer.CustomBankException;
@@ -54,7 +56,11 @@ public class UserFilter implements Filter {
 			
 			int userId = (int) id;
 			Customer customer = customerHelper.getCustomer(userId);
-
+			
+			if(customer.getStatus()==UserStatus.INACTIVE) {
+				throw new CustomBankException(Exceptions.DEACTIVATED_USER);
+			}
+			
 			request.setAttribute("myProfile", customer);
 
 			chain.doFilter(request, response);

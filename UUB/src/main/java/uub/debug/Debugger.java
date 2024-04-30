@@ -1,14 +1,47 @@
 package uub.debug;
 
-import java.io.Serializable;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-import uub.cachelayer.Cache;
-import uub.cachelayer.RedisCache;
 import uub.logicallayer.CustomerHelper;
-import uub.model.Customer;
 import uub.staticlayer.CustomBankException;
 
+ class NamedPermitSemaphore {
+    private Semaphore[] semaphores;
+BlockingQueue<String> a =null;
+    public NamedPermitSemaphore(int numPermits) {
+        semaphores = new Semaphore[numPermits];
+        for (int i = 0; i < numPermits; i++) {
+            semaphores[i] = new Semaphore(1); // Initialize with one permit each
+        }
+    }
+
+    public void acquire(String permitName) throws InterruptedException {
+        for (Semaphore semaphore : semaphores) {
+            if (semaphore.tryAcquire()) {
+                System.out.println("Thread acquired permit: " + permitName);
+                return;
+            }
+        }
+        throw new IllegalStateException("No available permits for: " + permitName);
+    }
+
+    public void release(String permitName) {
+        for (Semaphore semaphore : semaphores) {
+            if (semaphore.availablePermits() < 1) {
+                semaphore.release();
+                System.out.println("Thread released permit: " + permitName);
+                return;
+            }
+        }
+        throw new IllegalStateException("No permit to release for: " + permitName);
+    }
+}
+
 class Checker implements Runnable {
+	public static NamedPermitSemaphore s = new NamedPermitSemaphore(5);
 
 	@Override
 	public void run() {
@@ -23,15 +56,21 @@ class Checker implements Runnable {
 //		transaction.setDesc("dsfd");
 //		transaction.setTime(0);
 //		transaction.setStatus(0);
+        try {
+            // Acquire a permit from the semaphore
 
-		try {
-			CustomerHelper a = new CustomerHelper();
-//			a.makeTransaction(transaction, "sara");
-
-			System.out.println(a.getCustomer(1));
-		} catch (CustomBankException e) {
-			e.printStackTrace();
-		}
+            s.acquire("1");
+//            System.out.println("Worker " + Thread.currentThread().getName() + " acquired permit");
+            Thread.sleep(2000); // Simulate work
+//            System.out.println("Worker " + Thread.currentThread().getName() + " finished work");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            // Release the permit back to the semaphore
+            s.release("1");
+//            System.out.println("Worker " + Thread.currentThread().getName() + " released permit");
+        }
+		
 
 	}
 
@@ -42,18 +81,21 @@ class Checker2 implements Runnable {
 	@Override
 	public void run() {
 
-		Customer c = new Customer();
-
-		c.setAadhar("12345645367890");
-		c.setPAN("dsfdg");
-		c.setDOB(0);
-		c.setEmail("adsf");
-		c.setGender("adsf");
-		c.setName("adsf");
-		c.setPassword("sads");
-		c.setPhone("dsf");
-		c.setStatus(0);
-		c.setAddress("dsf");
+//		Customer c = new Customer();
+//
+//		c.setAadhar("12345645367890");
+//		c.setPAN("dsfdg");
+//		c.setDOB(0);
+//		c.setEmail("adsf");
+//		c.setGender("adsf");
+//		c.setName("adsf");
+//		c.setPassword("sads");
+//		c.setPhone("dsf");
+//		c.setStatus(0);
+//		c.setAddress("dsf");
+		
+		
+		
 //		c.setUserType(1);
 //
 //		try {
@@ -88,49 +130,53 @@ class Checker3 implements Runnable {
 	}
 
 }
- class MyClass implements Serializable {
-    private static final long serialVersionUID = 1L;
-    
-    // Singleton instance
-    private static final MyClass INSTANCE = new MyClass();
-    
-    // Private constructor to prevent instantiation
-    private MyClass() {
-        // Initialization code here
-    }
-    
-    // Public method to access the singleton instance
-    public static MyClass getInstance() {
-        return INSTANCE;
-    }
-    
-    // Override readResolve method to ensure singleton behavior during deserialization
-    protected Object readResolve() {
-        // Return the singleton instance to ensure only one instance is used
-        return INSTANCE;
-    }
-}
-class Lock implements Serializable{
-	
-	private static final long serialVersionUID = 1L;
-	protected Lock readResolve(){
-		return this;
-	}
-}
 
 public class Debugger {
+	
+	public static void foo() {
 
-	public static void main(String[] args) throws CustomBankException {
+	Semaphore s = new Semaphore(2);
+	
+	try {
+		s.acquire();
+		System.out.println(Thread.currentThread().getName()  + " in");
 		
-		Cache<String,MyClass> c = new RedisCache<String, MyClass>(6380);
+		Thread.sleep(5000);
 		
-		MyClass lock1 = MyClass.getInstance();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
+	finally {
+		s.release();
+		System.out.println(Thread.currentThread().getName()  +" out");
 		
-		c.set("a", lock1);
+	}
+	
+	}
+	public static void main(String[] args) throws CustomBankException{
+
+
+//		Thread[] threadPool = new Thread[10];
+//		for (int i = 0; i < 10; i++) {
+//			threadPool[i] = new Thread(new Checker());
+//		}
+//		
+//		for(Thread t : threadPool) {
+//			t.start();
+//		}
 		
-		MyClass lock2 = c.get("a");
+		Semaphore s = new Semaphore(2);
 		
-		System.out.println(lock1==lock2);
+		s.acquireUninterruptibly();
+		try {
+			s.acquire();
+			s.acquire();
+			s.release();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+
 
 
 	}

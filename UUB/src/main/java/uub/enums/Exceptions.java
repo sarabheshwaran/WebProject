@@ -28,6 +28,8 @@ public enum Exceptions {
     INVALID_AMOUNT("Invalid Amount !"),
 	INVALID_ACCOUNT("Invalid Account"),
 
+	DEACTIVATED_USER("User is not Active"),
+	
 	EMAIL_INVALID("Invalid email !"),
 	PHONE_INVALID("Invalid phone no. !"),
 	PASSWORD_INVALID("Invalid password !"),

@@ -46,8 +46,11 @@ public class Controller extends HttpServlet {
 			throws ServletException, IOException {
 
 		String path = request.getPathInfo();
+		if(path==null) {
+			path="";
+		}
 		Map<String, String[]> paramMap = request.getParameterMap();
-		
+
 		for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
 			String paramName = entry.getKey();
 			String[] paramValues = entry.getValue();
@@ -56,11 +59,16 @@ public class Controller extends HttpServlet {
 		}
 
 		switch (path) {
-		
 
 		case "/login": {
 
-			request.getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
+			if (request.getSession().getAttribute("userId") != null) {
+				response.sendRedirect(request.getContextPath() + "/app/user/account");
+			} else if (request.getSession().getAttribute("empId") != null) {
+				response.sendRedirect(request.getContextPath() + "/app/employee/profile");
+			} else {
+				request.getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
+			}
 			break;
 		}
 		case "/logout": {
@@ -293,15 +301,16 @@ public class Controller extends HttpServlet {
 		}
 		case "/employee/manageEmployees": {
 
-			if(!ServletHelper.checkAccess(request, response)) {
+			if (!ServletHelper.checkAccess(request, response)) {
 				response.sendError(401);
-			}else {
-			String action = request.getParameter("action");
+			} else {
+				String action = request.getParameter("action");
 
-			request.setAttribute("action", action);
+				request.setAttribute("action", action);
 
-			request.setAttribute("type", "employee");
-			request.getRequestDispatcher("/WEB-INF/users.jsp").forward(request, response);}
+				request.setAttribute("type", "employee");
+				request.getRequestDispatcher("/WEB-INF/users.jsp").forward(request, response);
+			}
 			break;
 		}
 		case "/employee/employee": {
@@ -460,7 +469,7 @@ public class Controller extends HttpServlet {
 			String paramName = entry.getKey();
 			String[] paramValues = entry.getValue();
 			System.out.print(paramName + ": ");
-System.out.println(Arrays.asList(paramValues));
+			System.out.println(Arrays.asList(paramValues));
 		}
 
 		switch (pathInfo) {
@@ -474,7 +483,6 @@ System.out.println(Arrays.asList(paramValues));
 			try {
 
 				int userId = HelperUtils.formatNumber(request.getParameter("userId"));
-
 
 				String password = request.getParameter("password");
 
@@ -508,7 +516,7 @@ System.out.println(Arrays.asList(paramValues));
 
 				request.setAttribute("error", e.getFullMessage());
 				request.getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
-			} 
+			}
 			break;
 		}
 
@@ -526,11 +534,9 @@ System.out.println(Arrays.asList(paramValues));
 			String type = request.getParameter("type");
 			String desc = request.getParameter("desc");
 
-
 			try {
 				int accNo = HelperUtils.formatNumber(request.getParameter("senderAccount"));
 				double amount = HelperUtils.formatDouble(request.getParameter("amount"));
-
 
 				Transaction transaction = new Transaction();
 
@@ -539,7 +545,6 @@ System.out.println(Arrays.asList(paramValues));
 				transaction.setDesc(desc);
 				transaction.setAmount(amount);
 				transaction.setLastModifiedBy(id);
-
 
 				CustomerHelper customerHelper = new CustomerHelper();
 
@@ -918,71 +923,72 @@ System.out.println(Arrays.asList(paramValues));
 
 		case "/employee/editEmployee": {
 
-			if(!ServletHelper.checkAccess(request, response)) {
+			if (!ServletHelper.checkAccess(request, response)) {
 				response.sendError(401);
-			}else {
-			int id = (int) request.getSession().getAttribute("empId");
+			} else {
+				int id = (int) request.getSession().getAttribute("empId");
 
-			Audit audit = new Audit();
-			audit.setUserId(id);
-			audit.setTime(DateUtils.getTime());
-			audit.setAction(AuditAction.USER_UPDATE);
+				Audit audit = new Audit();
+				audit.setUserId(id);
+				audit.setTime(DateUtils.getTime());
+				audit.setAction(AuditAction.USER_UPDATE);
 
-			int empId = 0;
-			try {
-
-				empId = HelperUtils.formatNumber(request.getParameter("employeeId"));
-
-				audit.setTargetId(empId);
-
-				AdminHelper adminHelper = new AdminHelper();
-
-				String status = request.getParameter("status");
-
-				if (status != null) {
-					switch (status) {
-
-					case "Activate": {
-
-						audit.setDesc("Employee Activated");
-						adminHelper.activateUser(empId, id);
-
-						break;
-					}
-					case "Deactivate": {
-
-						audit.setDesc("Employee Deactivated");
-						adminHelper.deActivateUser(empId, id);
-
-						break;
-					}
-
-					}
-				} else {
-
-					Employee employee = ServletHelper.mapEmployee(request);
-					employee.setLastModifiedBy(id);
-					adminHelper.editEmployee(empId, employee);
-				}
-
-				audit.setResult(AuditResult.SUCCESS);
-
-				response.sendRedirect(request.getContextPath() + "/app/employee/employee?employeeId=" + empId);
-
-			} catch (CustomBankException e) {
-
-				audit.setResult(AuditResult.FAILURE);
-				audit.setDesc(e.getFullMessage());
-				response.sendRedirect(request.getContextPath() + "/app/employee/employee?edit=true&employeeId=" + empId
-						+ "&error=" + e.getFullMessage());
-
-			} finally {
+				int empId = 0;
 				try {
-					AuditHelper.addAudit(audit);
+
+					empId = HelperUtils.formatNumber(request.getParameter("employeeId"));
+
+					audit.setTargetId(empId);
+
+					AdminHelper adminHelper = new AdminHelper();
+
+					String status = request.getParameter("status");
+
+					if (status != null) {
+						switch (status) {
+
+						case "Activate": {
+
+							audit.setDesc("Employee Activated");
+							adminHelper.activateUser(empId, id);
+
+							break;
+						}
+						case "Deactivate": {
+
+							audit.setDesc("Employee Deactivated");
+							adminHelper.deActivateUser(empId, id);
+
+							break;
+						}
+
+						}
+					} else {
+
+						Employee employee = ServletHelper.mapEmployee(request);
+						employee.setLastModifiedBy(id);
+						adminHelper.editEmployee(empId, employee);
+					}
+
+					audit.setResult(AuditResult.SUCCESS);
+
+					response.sendRedirect(request.getContextPath() + "/app/employee/employee?employeeId=" + empId);
+
 				} catch (CustomBankException e) {
-					e.printStackTrace();
+
+					audit.setResult(AuditResult.FAILURE);
+					audit.setDesc(e.getFullMessage());
+					response.sendRedirect(request.getContextPath() + "/app/employee/employee?edit=true&employeeId="
+							+ empId + "&error=" + e.getFullMessage());
+
+				} finally {
+					try {
+						AuditHelper.addAudit(audit);
+					} catch (CustomBankException e) {
+						e.printStackTrace();
+					}
 				}
-			}}
+			}
 			break;
 		}
 
@@ -1035,9 +1041,9 @@ System.out.println(Arrays.asList(paramValues));
 			EmployeeRole role = (EmployeeRole) request.getSession().getAttribute("role");
 			ApiAuth apiAuth = new ApiAuth();
 
-			if(role.equals(EmployeeRole.ADMIN)) {
+			if (role.equals(EmployeeRole.ADMIN)) {
 				apiAuth.setScope(1);
-			}else {
+			} else {
 				apiAuth.setScope(0);
 			}
 			apiAuth.setValidity(7);
@@ -1093,6 +1099,5 @@ System.out.println(Arrays.asList(paramValues));
 
 		}
 	}
-
 
 }

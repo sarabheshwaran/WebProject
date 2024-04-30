@@ -46,6 +46,11 @@
 		    <version>20140107</version>
 		</dependency>
 
+  	<dependency>
+  		<groupId>Bank-website</groupId>
+  		<artifactId>Bank-website</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
   </dependencies>
   <build>
     <plugins>
